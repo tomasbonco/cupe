@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+	<link rel="import" href="dist/x-cupe.html">
+	
+	<style>
+		x-cupe
+		{
+			background: #ddd;
+		}
+		
+		x-cupe-gallery
+		{
+			display: block;
+			
+			background: #aedddd;
+			height: 400px;
+		}
+	</style>
+</head>
+<body>
+	
+	<x-cupe-gallery></x-cupe-gallery>
+	
+	<script>
+		
+		document.querySelector('x-cupe').addEventListener( 'click', function(){ console.log('yes') } )
+	</script>
+
+</body>
+</html>

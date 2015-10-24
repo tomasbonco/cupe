@@ -1,0 +1,14 @@
+{
+  "name": "CUPE",
+  "version": "0.0.0",
+  "description": "",
+  "main": "cupe.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tomas Bonco",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^1.6.2"
+  }
+}
