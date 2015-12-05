@@ -1,5 +1,4 @@
-// Shim & native-safe ownerDocument lookup
-let owner = (document._currentScript || document.currentScript).ownerDocument;
+let owner = (document['_currentScript'] || document['currentScript']).ownerDocument;
 
 enum Step { Resize, Crop, Draw }
 
@@ -8,34 +7,6 @@ interface Dimensions
 	width: number;
 	height: number;
 }
-
-
-/**
- * Provides interface to work with input[type=text] element
- */
-class XCupeInputTextElement
-{
-	element: HTMLInputElement = null;
-	
-	constructor( element: HTMLInputElement )
-	{
-		this.element = element;
-	}
-	
-	val( newValue?: string ): string
-	{
-		if ( newValue )
-		{
-			this.element.value = newValue;
-		}
-		
-		return this.element.value
-	}
-}
-
-/**
- * Provides interface to work with input[type=file] element
- */
 class XCupeInputFileElement
 {
 	element: HTMLInputElement = null;
@@ -76,23 +47,38 @@ class XCupeInputFileElement
 		event.stopPropagation()
 	}
 }
+class XCupeInputTextElement
+{
+	element: HTMLInputElement = null;
+	
+	constructor( element: HTMLInputElement )
+	{
+		this.element = element;
+	}
+	
+	val( newValue?: string ): string
+	{
+		if ( newValue )
+		{
+			this.element.value = newValue;
+		}
+		
+		return this.element.value
+	}
+}
 
-
-/**
- * Provides interface to work with canvas element
- */
 class XCupeCanvasElement
 {
 	element: HTMLCanvasElement = null;
 	context: CanvasRenderingContext2D = null;
 	
-    constructor( element: HTMLCanvasElement )
+    constructor( element?: HTMLCanvasElement )
 	{
-        this.element = element;
-        this.context = element.getContext('2d');
+        this.element = element ? element : document.createElement('canvas');
+        this.context = this.element.getContext('2d');
     }
 	
-    setDimensions( newDimensions: Dimensions ): void
+    setDimensions( newDimensions: Dimensions, height?: number ): void
 	{
         this.element.width = newDimensions.width;
         this.element.height = newDimensions.height;
@@ -102,9 +88,19 @@ class XCupeCanvasElement
 	{
         return { width: this.element.width, height: this.element.height };
     }
+	
+	// HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap
+	drawImage( source: HTMLImageElement|HTMLVideoElement|HTMLCanvasElement, sx: number = 0, sy: number = 0, sWidth: number = -1, sHeight: number = -1, dx: number = 0, dy: number = 0, dWidth: number = -1, dHeight: number = -1 ): void
+	{
+		if ( sWidth === -1 ) sWidth = source.width ? source.width : 0;
+		if ( sHeight === -1 ) sHeight = source.height ? source.height : 0;
+		
+		if ( dWidth === -1 ) dWidth = this.element.width;
+		if ( dHeight === -1 ) dHeight = this.element.height;
+		
+		this.context.drawImage( source, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight )
+	}
 }
-
-
 class XCupe extends HTMLElement
 {
 	controller: XCupeController = null;
@@ -131,8 +127,7 @@ class XCupe extends HTMLElement
 		
 		
 		this.ondragover = ()=> { return false; }
-		
-		this.addEventListener( 'drop', this.dropListener)
+		this.addEventListener( 'drop', this.dropListener )
 		
 		this.style.display = 'inline-block'
 	}
@@ -207,11 +202,6 @@ class XCupe extends HTMLElement
 		return false
 	}
 }
-
-
-/**
- * Handles all the internal functionality of x-cupe element
- */
 class XCupeController
 {
 	element: XCupe = null;
@@ -223,7 +213,7 @@ class XCupeController
 	originalImage = <HTMLImageElement|HTMLCanvasElement> null;
 	workingImage: HTMLCanvasElement = null;
 	
-	crop = { top: 0, left: 0 }
+	crop = { top: 0, left: 0, apply: true }
 	
 	settings = {
 		crop: 'center'
@@ -238,7 +228,7 @@ class XCupeController
 	setupComponent()
 	{
 		// Create a shadow root
-		this.shadow = this.element.createShadowRoot();
+		this.shadow = this.element['createShadowRoot']();
 		
 		// stamp out our template in the shadow dom
 		let template = owner.querySelector("#template").content.cloneNode(true);
@@ -264,7 +254,7 @@ class XCupeController
 		// resize
 		if ( step <= Step.Resize )
 		{
-			let newDimensions = this.getResizeDimensions( { width: this.originalImage.width, height: this.originalImage.height}, this.canvas.getDimensions());
+			let newDimensions = this.getResizeDimensions( { width: this.originalImage.width, height: this.originalImage.height}, this.canvas.getDimensions(), this.crop.apply);
 		
 			this.canvas.setDimensions( newDimensions.canvas )
 			
@@ -305,7 +295,7 @@ class XCupeController
 			this.loadImage( fileReader.result ).then(( image: HTMLImageElement )=>
 			{
 				this.redrawImage( Step.Resize, image );
-				(window.URL || window.webkitURL).revokeObjectURL( image.src )
+				window.URL.revokeObjectURL( image.src )
 			})
 		}
 		
@@ -315,10 +305,10 @@ class XCupeController
 	
 	loadImage( data )
 	{
-		return new Promise(( resolve, reject )=>
+		return new window['Promise'](( resolve, reject )=>
 		{
 			let arrayBufferView = new Uint8Array( data )
-			let imageBlob = (window.URL || window.webkitURL).createObjectURL( new Blob([ arrayBufferView ], { type: "image/jpeg" } ));
+			let imageBlob = window.URL.createObjectURL( new Blob([ arrayBufferView ], { type: "image/jpeg" } ));
 			let image = new Image()
 			
 			image.onload = ()=> resolve( image )
@@ -339,7 +329,7 @@ class XCupeController
 	 * @param {object} canvas - width and height of canvas
 	 * @return {object} - new dimensions for image and canvas
 	 */
-	getResizeDimensions( image: Dimensions, canvas: Dimensions )
+	getResizeDimensions( image: Dimensions, canvas: Dimensions, crop: boolean )
 	{
 		let imageToCanvasRatio =
 		{
@@ -352,32 +342,33 @@ class XCupeController
 		{
 			if ( canvas.width === -1 && canvas.height === -1 )
 			{
-				// jump to return
+				canvas = image
 			}
 			
 			else if ( canvas.width === -1 )
 			{
-				canvas.width = this.settings.crop ? image.width : image.width / imageToCanvasRatio.width
+				canvas.width = Math.round( image.width / imageToCanvasRatio.height )
 			}
 			
 			else if ( canvas.height === -1 )
 			{
-				canvas.height = this.settings.crop ? image.height : image.height / imageToCanvasRatio.height
+				canvas.height = Math.round( image.height / imageToCanvasRatio.width )
 			}
 		}
 		
 		// scaling image
 		else
 		{
-			if ( this.settings.crop && imageToCanvasRatio.width < imageToCanvasRatio.height ) // width fixed, height has to be adjusted
+			if ( ( crop && imageToCanvasRatio.width < imageToCanvasRatio.height )  // width fixed, height has to be adjusted
+			|| ( ! crop && imageToCanvasRatio.width > imageToCanvasRatio.height ))
 			{
 				image.width = canvas.width
-				image.height = image.height / imageToCanvasRatio.width
+				image.height = Math.round( image.height / imageToCanvasRatio.width )
 			}
 			
 			else
 			{
-				image.width = image.width / imageToCanvasRatio.height
+				image.width = Math.round( image.width / imageToCanvasRatio.height ) // height fixed, width has to be adjusted
 				image.height = canvas.height
 			}
 		}
@@ -406,18 +397,16 @@ class XCupeController
 		
 		
 		// one canvas huge, for fast redrawing
-		let offScreenCanvas: HTMLCanvasElement = document.createElement( 'canvas' )
-		let offScreenCanvasContext = offScreenCanvas.getContext( '2d' )
+		let tempNewSize: Dimensions = { width: image.width + step.width, height: image.height + step.height }
 		
-		offScreenCanvas.width = image.width + step.width
-		offScreenCanvas.height = image.height + step.height
+		let offScreenCanvas: XCupeCanvasElement = new XCupeCanvasElement()
+		offScreenCanvas.setDimensions({
+			width: dimensions.width > tempNewSize.width ? dimensions.width : tempNewSize.width,
+			height: dimensions.height > tempNewSize.height ? dimensions.height : tempNewSize.height })
 		
 		// one canvas small, for final image
-		let workingCanvas: HTMLCanvasElement = document.createElement( 'canvas' )
-		let workingCanvasContext = workingCanvas.getContext( '2d' )
-		
-		workingCanvas.width = dimensions.width
-		workingCanvas.height = dimensions.height
+		let workingCanvas: XCupeCanvasElement = new XCupeCanvasElement()
+		workingCanvas.setDimensions( dimensions )
 		
 		for( let i = 1; i < quality; i++ )
 		{
@@ -427,14 +416,14 @@ class XCupeController
 				height: lastSize.height + step.height
 			}
 		
-			offScreenCanvasContext.drawImage( i === 1 ? image : offScreenCanvas, 0, 0, lastSize.width, lastSize.height, 0, 0, newSize.width, newSize.height)
+			offScreenCanvas.drawImage( i === 1 ? image : offScreenCanvas.element, 0, 0, lastSize.width, lastSize.height, 0, 0, newSize.width, newSize.height)
 			
 			lastSize = newSize;
 		}
 		
-		workingCanvasContext.drawImage( offScreenCanvas, 0, 0, lastSize.width, lastSize.height, 0, 0, dimensions.width, dimensions.height)
+		workingCanvas.drawImage( offScreenCanvas.element, 0, 0, lastSize.width, lastSize.height )
 		
-		return workingCanvas
+		return workingCanvas.element
 	}
 	
 	
@@ -519,7 +508,7 @@ class XCupeController
 			left = this.workingImage.width - this.canvas.getDimensions().width;
 		}
 		
-		this.crop = { left: 0 - left, top: 0 - top }
+		this.crop = { left: 0 - left, top: 0 - top, apply: this.crop.apply }
 	}
 	
 	draw()
@@ -528,20 +517,23 @@ class XCupeController
 		this.canvas.context.drawImage( this.workingImage, this.crop.left, this.crop.top )
 	}
 }
-
-
-// Register the element in the document
 class XCupeGallery extends HTMLElement
 {
 	controller: XCupeGalleryController = null;
-	clickListener: ()=>{}= null;
+	clickListener: ()=>{} = null;
+	dropListener: ()=>{} = null;
 	
 	createdCallback()
 	{
 		this.controller = new XCupeGalleryController( this );
 		
 		this.clickListener = this.clicked.bind( this )
+		this.dropListener = this.drop.bind( this )
+		
         this.addEventListener( 'click', this.clickListener )
+		this.addEventListener( 'drop', this.dropListener )
+		
+		this.ondragover = ()=> { return false; }
 	}
 
 	attributeChangedCallback(attribute, oldVal, newVal)
@@ -565,8 +557,15 @@ class XCupeGallery extends HTMLElement
 			this.controller.inputFile.open()
 		}
     }
+	
+	drop( event )
+	{
+		event.preventDefault()
+		this.controller.readFile( event.dataTransfer.files )
+		
+		return false
+	}
 }
-
 class XCupeGalleryController
 {
 	element: XCupeGallery = null;
@@ -585,7 +584,7 @@ class XCupeGalleryController
 	setupComponent()
 	{
 		// Create a shadow root
-		this.shadow = this.element.createShadowRoot();
+		this.shadow = this.element['createShadowRoot']();
 		
 		// stamp out our template in the shadow dom
 		let template = owner.querySelector("#template").content.cloneNode(true);
@@ -598,15 +597,12 @@ class XCupeGalleryController
 	{
 		for ( let file of files )
 		{
-			let element = new window['customElements'].xCupe
+			let element = new window['HTMLXCupeElement']()
 		
 			element.controller.readFile( file )
 			this.shadow.appendChild( element );
 		}
 	}
 }
-
-// Register our todo-item tag with the document
-if ( ! window['customElements'] ) window['customElements'] = {}
-window['customElements'].xCupe = document.registerElement('x-cupe', XCupe);
-window['customElements'].xCupeGallery = document.registerElement('x-cupe-gallery', XCupeGallery);
+window['HTMLXCupeElement'] = document['registerElement']('x-cupe', XCupe);
+window['HTMLXCupeGalleryElement'] = document['registerElement']('x-cupe-gallery', XCupeGallery);
