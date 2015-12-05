@@ -37,7 +37,7 @@ gulp.task('clean', function(){
 });
 
 gulp.task('remove_temp', function(){
-  return gulp.src(['src/temp_*.*'], { read: false })
+  return gulp.src(['src/temp_*.*'])
     .pipe(rimraf())
 });
 

@@ -6,13 +6,14 @@ class XCupe extends HTMLElement
 	mouseupListener: ()=>{} = null;
 	dropListener: ()=>{} = null;
 	
+	settings: Settings;
+	
 	moveImage = null;
 	
 	createdCallback()
 	{
 		this.controller = new XCupeController( this );
-		
-		this.controller.canvas.setDimensions( { width: 500, height: 500} );
+		this.controller.canvas.setDimensions({ width: 500, height: 500 });
 	
 		this.mousedownListener = this.mousedown.bind( this )
 		this.mousemoveListener = this.mousemove.bind( this )
@@ -22,6 +23,15 @@ class XCupe extends HTMLElement
 		this.addEventListener( 'mousedown', this.mousedownListener )
 		this.addEventListener( 'touchstart', this.mousedownListener )
 		
+		this.settings = {
+			height: this.getAttribute('height') ? parseInt(this.getAttribute('height')) : 500,
+			width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
+			crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
+			align: this.getAttribute('align') || 'center',
+			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
+			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
+			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+		}
 		
 		this.ondragover = ()=> { return false; }
 		this.addEventListener( 'drop', this.dropListener )
@@ -29,13 +39,54 @@ class XCupe extends HTMLElement
 		this.style.display = 'inline-block'
 	}
 
-	attributeChangedCallback(attribute, oldVal, newVal)
+	attributeChangedCallback( attribute, oldVal, newVal )
 	{
 		switch ( attribute )
 		{
+			case 'height':
+			
+				this.settings.height = parseInt( newVal )
+				this.controller.redrawImage( Step.Resize )
+				break;
+				
+			
+			case 'width':
+			
+				this.settings.width = parseInt( newVal )
+				this.controller.redrawImage( Step.Resize )
+				break;
+				
+				
 			case 'crop':
 			
-				// this.controller.convertCropToPx( newVal );
+				this.settings.crop = newVal.trim().toLowerCase() === 'true';
+				this.controller.redrawImage( Step.Resize )
+				break;
+				
+				
+			case 'align':
+			
+				this.settings.align = newVal.toLowerCase();
+				this.controller.redrawImage( Step.Crop )
+				break;
+			
+				
+			case 'allow-move':
+			
+				this.settings.allow_move = newVal.trim().toLowerCase() === 'true';
+				break;
+				
+			
+			case 'allow-select':
+			
+				this.settings.allow_select = newVal.trim().toLowerCase() === 'true';
+				break;
+				
+				
+			case 'allow-drop':
+			
+				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
+				break;
 		}
 	}
 	
@@ -67,7 +118,7 @@ class XCupe extends HTMLElement
 		
 		this.controller.setCrop( newCropTop, newCropLeft )
 		
-		let drawCallack = this.controller.draw.bind(this.controller)
+		let drawCallack = ()=>{ this.controller.redrawImage.call(this.controller, Step.Draw ) }
 		requestAnimationFrame( drawCallack )
 	}
 	
@@ -86,7 +137,10 @@ class XCupe extends HTMLElement
 		
 		else
 		{
-			this.controller.inputFile.open()
+			if ( this.settings.allow_select )
+			{
+				this.controller.inputFile.open()
+			}
 		}
 	}
 	
@@ -94,7 +148,10 @@ class XCupe extends HTMLElement
 	{
 		event.preventDefault()
 		
-		this.controller.readFile( event.dataTransfer.files )
+		if ( this.settings.allow_drop )
+		{
+			this.controller.readFile( event.dataTransfer.files )
+		}
 		
 		return false
 	}

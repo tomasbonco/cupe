@@ -7,3 +7,14 @@ interface Dimensions
 	width: number;
 	height: number;
 }
+
+interface Settings
+{
+	height: number;
+	width: number;
+	crop: boolean;
+	align: string;
+	allow_move: boolean;
+	allow_drop: boolean;
+	allow_select: boolean;	
+}

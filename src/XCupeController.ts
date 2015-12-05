@@ -9,11 +9,7 @@ class XCupeController
 	originalImage = <HTMLImageElement|HTMLCanvasElement> null;
 	workingImage: HTMLCanvasElement = null;
 	
-	crop = { top: 0, left: 0, apply: true }
-	
-	settings = {
-		crop: 'center'
-	}; // TODO: Interface
+	crop = { top: 0, left: 0 }
 	
 	constructor( xcupe: XCupe )
 	{
@@ -50,7 +46,7 @@ class XCupeController
 		// resize
 		if ( step <= Step.Resize )
 		{
-			let newDimensions = this.getResizeDimensions( { width: this.originalImage.width, height: this.originalImage.height}, this.canvas.getDimensions(), this.crop.apply);
+			let newDimensions = this.getResizeDimensions( { width: this.originalImage.width, height: this.originalImage.height}, { width: this.element.settings.width, height: this.element.settings.height }, this.element.settings.crop);
 		
 			this.canvas.setDimensions( newDimensions.canvas )
 			
@@ -58,9 +54,9 @@ class XCupeController
 		}
 		
 		// crop
-		if ( step <= Step.Crop )
+		if ( step <= Step.Crop && this.element.settings.crop )
 		{
-			let crop = this.convertCropToPx( { width: this.workingImage.width, height: this.workingImage.height }, this.canvas.getDimensions(), this.settings.crop )
+			let crop = this.convertCropToPx( { width: this.workingImage.width, height: this.workingImage.height }, this.canvas.getDimensions(), this.element.settings.align )
 			this.setCrop( crop.top, crop.left );
 		}
 		
@@ -169,7 +165,7 @@ class XCupeController
 			}
 		}
 		
-		return { image: image, canvas: canvas }
+		return { image: image, canvas: crop ? canvas : image }
 	}
 	
 	/**
@@ -204,7 +200,7 @@ class XCupeController
 		let workingCanvas: XCupeCanvasElement = new XCupeCanvasElement()
 		workingCanvas.setDimensions( dimensions )
 		
-		for( let i = 1; i < quality; i++ )
+		for ( let i = 1; i < quality; i++ )
 		{
 			newSize = 
 			{
@@ -304,12 +300,14 @@ class XCupeController
 			left = this.workingImage.width - this.canvas.getDimensions().width;
 		}
 		
-		this.crop = { left: 0 - left, top: 0 - top, apply: this.crop.apply }
+		this.crop = { left: 0 - left, top: 0 - top }
 	}
 	
 	draw()
 	{
+		let crop: boolean = this.element.settings.crop; 
+		
 		this.canvas.context.clearRect( 0, 0, this.canvas.getDimensions().width, this.canvas.getDimensions().height )
-		this.canvas.context.drawImage( this.workingImage, this.crop.left, this.crop.top )
+		this.canvas.context.drawImage( this.workingImage, crop ? this.crop.left : 0, crop ? this.crop.top : 0 )
 	}
 }
