@@ -35,4 +35,12 @@ class XCupeGalleryController
 			this.shadow.appendChild( element );
 		}
 	}
+	
+	updateChildAttribute( attribute, oldVal, newVal ): void
+	{
+		for ( let xcupe in this.shadow.querySelectorAll('x-cupe') )
+		{
+			xcupe.setAttribute( attribute, newVal )
+		}
+	}
 }

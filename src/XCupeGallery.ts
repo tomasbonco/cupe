@@ -4,6 +4,8 @@ class XCupeGallery extends HTMLElement
 	clickListener: ()=>{} = null;
 	dropListener: ()=>{} = null;
 	
+	settings: Settings;
+	
 	createdCallback()
 	{
 		this.controller = new XCupeGalleryController( this );
@@ -15,15 +17,71 @@ class XCupeGallery extends HTMLElement
 		this.addEventListener( 'drop', this.dropListener )
 		
 		this.ondragover = ()=> { return false; }
+		
+		this.settings = {
+			height: this.getAttribute('height') ? parseInt(this.getAttribute('height')) : 500,
+			width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
+			crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
+			align: this.getAttribute('align') || 'center',
+			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
+			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
+			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+		}
 	}
 
 	attributeChangedCallback(attribute, oldVal, newVal)
 	{
+		let applyOnChildren = true; // when true attribute change will be applied to children - <x-cupe> elements
+		
 		switch ( attribute )
 		{
-			case 'crop':
+			case 'height':
 			
-				// this.controller.convertCropToPx( newVal );
+				this.settings.height = parseInt( newVal )
+				break;
+				
+				
+			case 'width':
+			
+				this.settings.width = parseInt( newVal )
+				break;
+				
+				
+			case 'crop':
+				
+				this.settings.crop = newVal.trim().toLowerCase() === 'true';
+				break;
+				
+				
+			case 'align':
+			
+				this.settings.align = newVal.toLowerCase().trim();
+				break;
+				
+				
+			case 'allow-move':
+			
+				this.settings.allow_move = newVal.trim().toLowerCase() === 'true';
+				break;
+				
+				
+			case 'allow-select':
+			
+				this.settings.allow_select = newVal.trim().toLowerCase() === 'true';
+				applyOnChildren = false
+				break;
+				
+				
+			case 'allow-drop':
+			
+				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
+				applyOnChildren = false
+				break;
+		}
+		
+		if ( applyOnChildren )
+		{
+			this.controller.updateChildAttribute( attribute, oldVal, newVal )
 		}
 	}
 	
@@ -32,9 +90,8 @@ class XCupeGallery extends HTMLElement
         event.stopPropagation()
 		event.preventDefault()
 
-		if ( event.path[0] === this )
+		if ( event.path[0] === this && this.settings.allow_select )
 		{
-			console.log( event, event.path[0] )
 			this.controller.inputFile.open()
 		}
     }
@@ -42,7 +99,11 @@ class XCupeGallery extends HTMLElement
 	drop( event )
 	{
 		event.preventDefault()
-		this.controller.readFile( event.dataTransfer.files )
+		
+		if ( this.settings.allow_drop )
+		{
+			this.controller.readFile( event.dataTransfer.files )
+		}
 		
 		return false
 	}

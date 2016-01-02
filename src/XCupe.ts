@@ -108,7 +108,7 @@ class XCupe extends HTMLElement
 			this.moveImage.applied = true
 			document.addEventListener( 'mousemove', this.mousemoveListener )
 			document.addEventListener( 'touchmove', this.mousemoveListener )
-		}, 150 )
+		}, 100 )
 	}
 	
 	mousemove( event )
