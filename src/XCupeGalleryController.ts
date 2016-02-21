@@ -25,13 +25,24 @@ class XCupeGalleryController
 		this.inputFile = new XCupeInputFileElement( <HTMLInputElement> this.shadow.querySelector('input[type="file"]'), this, true )
 	}
 	
-	readFile( files )
+	readAndDrawImage( files )
 	{
 		for ( let file of files )
 		{
 			let element = new window['HTMLXCupeElement']()
+			let galleryAttributes = this.element.attributes;
+			
+			for ( let i = 0; i < galleryAttributes.length; i++ ) // TODO: check this, if it works
+			{
+				if ( ~[ 'allow-drop', 'allow-select' ].indexOf( galleryAttributes[i].name ) )
+				{
+					continue;
+				}
+				
+				element.setAttribute( galleryAttributes[i].name, galleryAttributes[i].value )
+			}
 		
-			element.controller.readFile( file )
+			element.controller.readAndDrawImage( file )
 			this.shadow.appendChild( element );
 		}
 	}

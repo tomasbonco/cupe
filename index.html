@@ -25,7 +25,10 @@
 <body>
 	
 	<x-cupe-gallery></x-cupe-gallery>
-	<x-cupe crop="false" allow-move="false"></x-cupe>
+	<x-cupe allow-move="false"></x-cupe>
 
+	<script src="plugins/zoom.js"></script>
+	<script> zoomable( document.querySelector('x-cupe') ) </script>
+	
 </body>
 </html>

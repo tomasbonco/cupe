@@ -32,7 +32,7 @@ class XCupeController
 	}
 	
 	
-	redrawImage( step: Step = Step.Resize, newOriginal?: HTMLImageElement|HTMLCanvasElement )
+	redrawImage( step: Step = Step.Resize, newOriginal?: HTMLImageElement|HTMLCanvasElement, reverse = false )
 	{
 		if ( newOriginal )
 		{
@@ -44,7 +44,7 @@ class XCupeController
 		
 		
 		// resize
-		if ( step <= Step.Resize )
+		if ( (step <= Step.Resize && ! reverse) || (step >= Step.Resize && reverse) )
 		{
 			let newDimensions = this.getResizeDimensions( { width: this.originalImage.width, height: this.originalImage.height}, { width: this.element.settings.width, height: this.element.settings.height }, this.element.settings.crop);
 		
@@ -54,48 +54,53 @@ class XCupeController
 		}
 		
 		// crop
-		if ( step <= Step.Crop && this.element.settings.crop )
+		if ( (step <= Step.Crop && this.element.settings.crop && ! reverse) || (step >= Step.Crop && reverse) )
 		{
 			let crop = this.convertCropToPx( { width: this.workingImage.width, height: this.workingImage.height }, this.canvas.getDimensions(), this.element.settings.align )
 			this.setCrop( crop.top, crop.left );
 		}
 		
 		// draw
-		if ( step <= Step.Draw )
+		if ( (step <= Step.Draw && ! reverse) || (step >= Step.Draw && reverse) )
 		{
 			this.draw()
 		}
 	}
 	
 	
-	readFile( file )
+	readFile( file: Blob|Blob[] )
 	{
-        if ( file[0] )
-        {
-            file = file[0]; // can read only first file
-        }
-		
-		if ( ! file.type.match(/image.*/)) return;
-		
-		let fileReader = new FileReader()
-		
-		fileReader.onerror = ()=>{} // TODO
-		fileReader.onprogress = ()=>{} // TODO
-		
-		fileReader.onload = ()=>
+		return new window['Promise'](( resolve, reject )=>
 		{
-			this.loadImage( fileReader.result ).then(( image: HTMLImageElement )=>
+			if ( file[0] )
 			{
-				this.redrawImage( Step.Resize, image );
-				window.URL.revokeObjectURL( image.src )
-			})
-		}
-		
-		fileReader.readAsArrayBuffer( file )
+				file = file[0]; // can read only first file
+			}
+			
+			if ( file instanceof Blob )
+			{			
+				if ( ! file.type.match(/image.*/))
+				{
+					reject('Unsupported file type.')
+				}
+				
+				let fileReader = new FileReader()
+				
+				fileReader.onerror = ()=>{} // TODO
+				fileReader.onprogress = ()=>{} // TODO
+				
+				fileReader.onload = ()=>
+				{
+					resolve( fileReader.result );
+				}
+				
+				fileReader.readAsArrayBuffer( file )
+			}
+		})
 	}
 	
 	
-	loadImage( data )
+	loadImage( data: Iterable<number> )
 	{
 		return new window['Promise'](( resolve, reject )=>
 		{
@@ -106,6 +111,25 @@ class XCupeController
 			image.onload = ()=> resolve( image )
 			image.src = imageBlob
 		});
+	}
+	
+	/**
+	 * Shorthand. It reads image file, loads image and draws resized & cropped image.
+	 */
+	readAndDrawImage( file: Blob|Blob[] )
+	{
+		return this.readFile( file )
+		
+		.then(( fileContent )=>
+		{
+			return this.loadImage( fileContent )
+		})
+		
+		.then(( image: HTMLImageElement )=>
+		{
+			this.redrawImage( Step.Resize, image );
+			window.URL.revokeObjectURL( image.src )
+		})
 	}
 	
 	

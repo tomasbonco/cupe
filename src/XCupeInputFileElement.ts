@@ -30,7 +30,7 @@ class XCupeInputFileElement
 	
 	onChange( event )
 	{
-		this.controller.readFile( event.target.files )
+		this.controller.readAndDrawImage( event.target.files )
 	}
 	
 	clicked( event: Event )

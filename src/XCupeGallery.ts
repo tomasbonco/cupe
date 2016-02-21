@@ -102,7 +102,7 @@ class XCupeGallery extends HTMLElement
 		
 		if ( this.settings.allow_drop )
 		{
-			this.controller.readFile( event.dataTransfer.files )
+			this.controller.readAndDrawImage( event.dataTransfer.files )
 		}
 		
 		return false
