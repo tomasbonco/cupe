@@ -4,7 +4,12 @@ var runSequence = require('run-sequence');
 var typescript = require('gulp-tsc');
 var rimraf = require('gulp-rimraf');
 
-gulp.task('join-libraries', function() {
+gulp.task('clean', function(){
+  return gulp.src(['dist'])
+    .pipe(rimraf())
+});
+
+gulp.task('join-libraries', ['clean'], function() {
   return gulp.src([
 			'./src/interfaces.ts',
 			'./src/XCupeInputFileElement.ts',
@@ -20,34 +25,24 @@ gulp.task('join-libraries', function() {
     .pipe(gulp.dest('./src/'));
 });
 
-gulp.task('compile', function(){
+gulp.task('compile', ['join-libraries'], function(){
   return gulp.src(['src/temp_joined.ts'])
     .pipe(typescript({ out: 'x-cupe.js', emitError: false }))
     .pipe(gulp.dest('dist/'))
 });
 
-gulp.task('copy-html', function(){
+gulp.task('copy-html', ['compile'], function(){
   return gulp.src(['src/*.html'])
     .pipe(gulp.dest('dist/'))
 });
 
-gulp.task('clean', function(){
-  return gulp.src(['dist'])
-    .pipe(rimraf())
-});
-
-gulp.task('remove_temp', function(){
+gulp.task('remove_temp', ['copy-html'], function(){
   return gulp.src(['src/temp_*.*'])
     .pipe(rimraf())
 });
 
-gulp.task('default', function( callback ) {
-  return runSequence(
-    'clean', 'join-libraries', 'compile', 'copy-html', 'remove_temp', 'watch',
-    callback
-  );
-});
-
-gulp.task('watch', function(){
+gulp.task('watch', ['remove_temp'], function(){
 	gulp.watch( 'src/**/*.*', ['clean', 'join-libraries', 'compile', 'copy-html', 'remove_temp' ]);
 })
+
+gulp.task('default', ['watch'], function(){});
