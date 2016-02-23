@@ -42,7 +42,11 @@ gulp.task('remove_temp', ['copy-html'], function(){
 });
 
 gulp.task('watch', ['remove_temp'], function(){
-	gulp.watch( 'src/**/*.*', ['clean', 'join-libraries', 'compile', 'copy-html', 'remove_temp' ]);
+	gulp.watch( ['src/**/*.*', '!src/**/temp_*.*'], function(){
+		gulp.start('remove_temp');
+	});
 })
 
-gulp.task('default', ['watch'], function(){});
+gulp.task('default', ['watch'], function( callback ) {
+	callback()
+});
