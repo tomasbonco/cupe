@@ -70,7 +70,7 @@ class XCupeController
 	
 	readFile( file: Blob|Blob[] )
 	{
-		return new window['Promise'](( resolve, reject )=>
+		return new Promise(( resolve, reject )=>
 		{
 			if ( file[0] )
 			{
@@ -100,9 +100,9 @@ class XCupeController
 	}
 	
 	
-	loadImage( data: Iterable<number> )
+	loadImage( data )
 	{
-		return new window['Promise'](( resolve, reject )=>
+		return new Promise(( resolve, reject )=>
 		{
 			let arrayBufferView = new Uint8Array( data )
 			let imageBlob = window.URL.createObjectURL( new Blob([ arrayBufferView ], { type: "image/jpeg" } ));
