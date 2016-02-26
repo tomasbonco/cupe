@@ -10,6 +10,7 @@ class XCupeController
 	workingImage: HTMLCanvasElement = null;
 	
 	crop = { top: 0, left: 0 }
+	isImageDrawn = false
 	
 	constructor( xcupe: XCupe )
 	{
@@ -329,7 +330,8 @@ class XCupeController
 	
 	draw()
 	{
-		let crop: boolean = this.element.settings.crop; 
+		let crop: boolean = this.element.settings.crop;
+		this.isImageDrawn = true
 		
 		this.canvas.context.clearRect( 0, 0, this.canvas.getDimensions().width, this.canvas.getDimensions().height )
 		this.canvas.context.drawImage( this.workingImage, crop ? this.crop.left : 0, crop ? this.crop.top : 0 )

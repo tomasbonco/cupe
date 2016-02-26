@@ -103,12 +103,15 @@ class XCupe extends HTMLElement
 		document.addEventListener( 'mouseup', this.mouseupListener )
 		document.addEventListener( 'touchend', this.mouseupListener )
 		
-		this.moveImage.timeout = setTimeout(()=>
+		if ( this.controller.isImageDrawn )
 		{
-			this.moveImage.applied = true
-			document.addEventListener( 'mousemove', this.mousemoveListener )
-			document.addEventListener( 'touchmove', this.mousemoveListener )
-		}, 150 )
+			this.moveImage.timeout = setTimeout(()=>
+			{
+				this.moveImage.applied = true
+				document.addEventListener( 'mousemove', this.mousemoveListener )
+				document.addEventListener( 'touchmove', this.mousemoveListener )
+			}, 150 )
+		}
 	}
 	
 	mousemove( event )
