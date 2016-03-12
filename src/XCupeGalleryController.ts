@@ -49,9 +49,42 @@ class XCupeGalleryController
 	
 	updateChildAttribute( attribute, oldVal, newVal ): void
 	{
-		for ( let xcupe in this.shadow.querySelectorAll('x-cupe') )
+		this.getChildrenAsArray().forEach( xcupe =>
 		{
-			xcupe.setAttribute( attribute, newVal )
-		}
+			( <Element> xcupe).setAttribute( attribute, newVal )
+		})
+	}
+	
+	getContent( type: string = "Array", contentType: OutputType, mimeType: string = "image/png", quality: number = 0.92 )
+	{
+		type = type.toLowerCase();
+		
+		if ( type !== 'map' || type !== 'array' ) throw new Error( `Incorrect type for CupeGallery.getContent provided (${type}). Allowed values are Map|Array` );
+		
+		let contentMap = new Map<XCupe, any>();
+		let contentArray: XCupe[] = [];
+		
+		this.getChildrenAsArray().forEach( xcupe =>
+		{
+			let content = xcupe.getContent( contentType, mimeType, quality );
+			
+			if ( type === 'map')
+			{
+				contentMap.set( xcupe, content );
+			}
+			
+			else
+			{
+				contentArray.push( content )
+			}
+		})
+		
+		return ( type === 'map' ) ? contentMap : contentArray;
+	}
+	
+	getChildrenAsArray(): XCupe[]
+	{
+		var children = this.shadow.querySelectorAll('x-cupe');
+		return Array.prototype.slice.call( children, 0 );
 	}
 }

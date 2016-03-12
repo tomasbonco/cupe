@@ -107,4 +107,9 @@ class XCupeGallery extends HTMLElement
 		
 		return false
 	}
+	
+	getContent()
+	{
+		this.controller.getContent.call( this.controller, arguments );
+	}
 }

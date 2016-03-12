@@ -158,4 +158,9 @@ class XCupe extends HTMLElement
 		
 		return false
 	}
+	
+	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
+	{
+		this.controller.getContent.call( this.controller, arguments );
+	}
 }

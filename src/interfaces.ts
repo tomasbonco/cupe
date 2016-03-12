@@ -18,3 +18,5 @@ interface Settings
 	allow_drop: boolean;
 	allow_select: boolean;	
 }
+
+enum OutputType { Context, DataUrl, Blob }

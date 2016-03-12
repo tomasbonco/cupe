@@ -31,4 +31,41 @@ class XCupeCanvasElement
 		
 		this.context.drawImage( source, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight )
 	}
+	
+	getDataUrl( mimeType: string = "image/png", quality: number = 0.92 )
+	{
+		if ( mimeType !== 'jpg' || mimeType !== 'png' || mimeType !== 'webp') throw new Error( `Incorrect mimetype provided (${mimeType}). Accepted values are png|jpg|webp.` );
+		
+		switch( mimeType )
+		{
+			case 'image/png':
+				
+				return this.element.toDataURL();
+				
+				
+			default:
+			
+				if ( quality < 0 || quality > 1 )
+				{
+					console.error( `Image quality must be between 0 and 1. Provided ${ quality }. Setting quality to 1.` );
+					quality = 1;
+				}
+				
+				this.element.toDataURL( mimeType, quality );
+				
+				break;
+		}
+	}
+	
+	/* - toBlob is not standard yet.
+
+	getBlob( mimeType: string = "image/png", quality: number = 0.92 )
+	{
+		return new Promise( ( resolved: ()=>void, rejected )=>
+		{
+			this.element.toBlob( resolved, mimeType, quality )
+		})
+	}
+	
+	*/
 }

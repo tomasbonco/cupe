@@ -336,4 +336,31 @@ class XCupeController
 		this.canvas.context.clearRect( 0, 0, this.canvas.getDimensions().width, this.canvas.getDimensions().height )
 		this.canvas.context.drawImage( this.workingImage, crop ? this.crop.left : 0, crop ? this.crop.top : 0 )
 	}
+	
+	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
+	{
+		switch( contentType )
+		{
+			case OutputType.Context:
+			
+				return this.canvas.context;
+				
+			
+			case OutputType.DataUrl:
+			
+				return this.canvas.getDataUrl( mimeType, quality );
+				
+				
+			case OutputType.Blob:
+			
+				throw new Error( 'Getting content as Blob isn\'t implemented yet, as it is currenty supported just by Firefox.');
+				// return this.canvas.getBlob( mimeType, quality );
+				// break;
+				
+			default:
+				
+				throw new Error( 'Incorrect contentType.' );
+			
+		}
+	}
 }
