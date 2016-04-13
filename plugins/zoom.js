@@ -1,21 +1,14 @@
-function zoomable( elementOrController, userSettings )
+function makeCupeZoomable( elementOrController, userSettings )
 {
-	if ( ! ( elementOrController instanceof XCupe ) && ! ( elementOrController === XCupeController)) throw new Error('Neither element nor controller supplied!');
+	if ( ! elementOrController ) elementOrController = XCupeController;
 	
-	var element;
-	var controller;
-	
-	if ( elementOrController instanceof XCupe )
+	if ( ! ( elementOrController instanceof XCupe ) && ! ( elementOrController === XCupeController))
 	{
-		element =  elementOrController;
-		controller = element.controller;
+		throw new Error('Neither element, nor controller supplied!');
 	}
 	
-	else
-	{
-		element = XCupe.prototype;
-		controller = elementOrController.prototype; 
-	}
+	
+	var controller =  ( elementOrController instanceof XCupe ) ? element.controller : elementOrController.prototype; 
 	
 	var originalRnDImg = controller.readAndDrawImage;
 	var originalResizeDimensions = controller.getResizeDimensions;

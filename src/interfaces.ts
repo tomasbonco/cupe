@@ -16,7 +16,8 @@ interface Settings
 	align: string;
 	allow_move: boolean;
 	allow_drop: boolean;
-	allow_select: boolean;	
+	allow_select: boolean;
+	name: string;
 }
 
 enum OutputType { Context, DataUrl, Blob }

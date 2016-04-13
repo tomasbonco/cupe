@@ -34,7 +34,10 @@ class XCupeCanvasElement
 	
 	getDataUrl( mimeType: string = "image/png", quality: number = 0.92 )
 	{
-		if ( mimeType !== 'jpg' || mimeType !== 'png' || mimeType !== 'webp') throw new Error( `Incorrect mimetype provided (${mimeType}). Accepted values are png|jpg|webp.` );
+		if ( mimeType !== 'image/jpg' && mimeType !== 'image/png' && mimeType !== 'image/webp')
+		{
+			throw new Error( `Incorrect mimetype provided (${mimeType}). Accepted values are png|jpg|webp.` );
+		}
 		
 		switch( mimeType )
 		{

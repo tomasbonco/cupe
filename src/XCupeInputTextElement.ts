@@ -16,4 +16,14 @@ class XCupeInputTextElement
 		
 		return this.element.value
 	}
+	
+	name( newValue?: string ): string
+	{
+		if ( newValue )
+		{
+			this.element.setAttribute( 'name', newValue );
+		}
+		
+		return this.element.getAttribute( 'name' );
+	}
 }

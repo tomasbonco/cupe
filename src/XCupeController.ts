@@ -79,7 +79,7 @@ class XCupeController
 			}
 			
 			if ( file instanceof Blob )
-			{			
+			{
 				if ( ! file.type.match(/image.*/))
 				{
 					reject('Unsupported file type.')
@@ -335,6 +335,11 @@ class XCupeController
 		
 		this.canvas.context.clearRect( 0, 0, this.canvas.getDimensions().width, this.canvas.getDimensions().height )
 		this.canvas.context.drawImage( this.workingImage, crop ? this.crop.left : 0, crop ? this.crop.top : 0 )
+		
+		if ( ! this.element.moveImage.applied )
+		{
+			this.saveToInput();
+		}
 	}
 	
 	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
@@ -361,6 +366,14 @@ class XCupeController
 				
 				throw new Error( 'Incorrect contentType.' );
 			
+		}
+	}
+	
+	saveToInput()
+	{
+		if ( this.element.settings.name )
+		{
+			this.inputText.val( this.getContent() );	
 		}
 	}
 }

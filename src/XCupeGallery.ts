@@ -26,6 +26,7 @@ class XCupeGallery extends HTMLElement
 			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
 			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
 			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+			name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : '',
 		}
 	}
 
@@ -76,6 +77,13 @@ class XCupeGallery extends HTMLElement
 			
 				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
 				applyOnChildren = false
+				break;
+				
+			
+			case 'name':
+				
+				newVal = newVal + '[]';
+				this.settings.name = newVal;
 				break;
 		}
 		

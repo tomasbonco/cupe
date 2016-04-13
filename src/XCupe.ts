@@ -9,6 +9,8 @@ class XCupe extends HTMLElement
 	settings: Settings;
 	
 	moveImage = null;
+	isMouseDown = false;
+	numberX = 0;
 	
 	createdCallback()
 	{
@@ -31,10 +33,20 @@ class XCupe extends HTMLElement
 			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
 			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
 			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+			name: this.getAttribute('name') || '',
 		}
+		
+		this.moveImage = {
+			applied: false,
+			timeout: null,
+			position: { x: 0, y: 0 },
+			crop: null
+		};
 		
 		this.ondragover = ()=> { return false; }
 		this.addEventListener( 'drop', this.dropListener )
+		
+		this.isMouseDown = false;
 		
 		this.style.display = 'inline-block'
 	}
@@ -87,11 +99,33 @@ class XCupe extends HTMLElement
 			
 				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
 				break;
+				
+				
+			case 'name':
+			
+				this.settings.name = newVal;
+				
+				if ( this.controller.inputText )
+				{
+					this.controller.inputText.name( newVal )
+				}
+				
+				break;
 		}
 	}
 	
 	mousedown( event )
 	{
+		event.preventDefault();
+		
+		if ( this.isMouseDown )
+		{
+			return;
+		}
+		
+		this.numberX = Math.random();
+		this.isMouseDown = true;
+		
 		this.moveImage =
 		{
 			applied: false,
@@ -115,7 +149,9 @@ class XCupe extends HTMLElement
 	}
 	
 	mousemove( event )
-	{		
+	{
+		event.preventDefault();
+		
 		let newCropTop =  this.moveImage.crop.top - ( event.pageY - this.moveImage.position.y )
 		let newCropLeft =  this.moveImage.crop.left - ( event.pageX - this.moveImage.position.x )
 		
@@ -127,6 +163,16 @@ class XCupe extends HTMLElement
 	
 	mouseup()
 	{
+		event.preventDefault();
+		
+		if ( ! this.isMouseDown )
+		{
+			console.log('catched!')
+			return;
+		}
+		
+		this.isMouseDown = false;
+		
 		clearTimeout( this.moveImage.timeout )
 		
 		document.removeEventListener( 'mouseup', this.mouseupListener )
@@ -136,6 +182,10 @@ class XCupe extends HTMLElement
 		{
 			document.removeEventListener( 'mousemove', this.mousemoveListener )
 			document.removeEventListener( 'touchmove', this.mousemoveListener )
+			
+			this.moveImage.applied = false
+			
+			this.controller.redrawImage( Step.Draw );
 		}
 		
 		else
