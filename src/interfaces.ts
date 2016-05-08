@@ -14,9 +14,9 @@ interface Settings
 	width: number;
 	crop: boolean;
 	align: string;
-	allow_move: boolean;
-	allow_drop: boolean;
-	allow_select: boolean;
+	allowMove: boolean;
+	allowDrop: boolean;
+	allowSelect: boolean;
 	name: string;
 }
 

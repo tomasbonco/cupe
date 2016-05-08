@@ -4,12 +4,11 @@ class XCupeGalleryController
 	shadow: HTMLElement = null;
 	inputFile: XCupeInputFileElement = null;
 	
-	constructor( xcupe: XCupeGallery )
+	constructor( xcupegallery: XCupeGallery )
 	{
-		this.element = xcupe;
+		this.element = xcupegallery;
 		this.setupComponent();
 		
-		this.shadow.removeChild( this.shadow.querySelector('input[type="text"]') );
 		this.shadow.removeChild( this.shadow.querySelector('canvas') );
 	}
 
@@ -43,7 +42,7 @@ class XCupeGalleryController
 			}
 		
 			element.controller.readAndDrawImage( file )
-			this.shadow.appendChild( element );
+			this.element.appendChild( element );
 		}
 	}
 	
@@ -84,7 +83,7 @@ class XCupeGalleryController
 	
 	getChildrenAsArray(): XCupe[]
 	{
-		var children = this.shadow.querySelectorAll('x-cupe');
+		var children = this.element.querySelectorAll('x-cupe');
 		return Array.prototype.slice.call( children, 0 );
 	}
 }

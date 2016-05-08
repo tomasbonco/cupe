@@ -54,9 +54,7 @@ class XCupeCanvasElement
 					quality = 1;
 				}
 				
-				this.element.toDataURL( mimeType, quality );
-				
-				break;
+				return this.element.toDataURL( mimeType, quality );
 		}
 	}
 	

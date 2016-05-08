@@ -24,9 +24,15 @@
 </head>
 <body>
 	
-	<x-cupe-gallery></x-cupe-gallery>
-	<x-cupe allow-move="false"></x-cupe>
+	<form action="http://localhost/COMPER/Cupe/custom-element/server/php/index.php" method="POST">
+	
+		<x-cupe  width="450" height="450" name="cupe"></x-cupe>
+		
+		<input type="submit">
 
+	</form>
+
+	<script src="http://192.168.1.73:8080/target/target-script-min.js#anonymous"></script>
 	<script src="plugins/zoom.js"></script>
 	<script> zoomable( document.querySelector('x-cupe') ) </script>
 	

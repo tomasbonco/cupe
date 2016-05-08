@@ -27,8 +27,14 @@ class XCupeController
 		let template = owner.querySelector("#template").content.cloneNode(true);
 		this.shadow.appendChild(template);
 		
+		// Create input[type="text"] for saving result and easy sending in form;
+		// cannot be inside of element because of web compontents's encapsulation
+		let inputText = document.createElement('input')
+		inputText.style.display = 'none'; 
+		this.element.appendChild( inputText )
+		
 		this.canvas = new XCupeCanvasElement( <HTMLCanvasElement> this.shadow.querySelector('canvas') )
-		this.inputText = new XCupeInputTextElement( <HTMLInputElement> this.shadow.querySelector('input[type="text"]') )
+		this.inputText = new XCupeInputTextElement( <HTMLInputElement> inputText )
 		this.inputFile = new XCupeInputFileElement( <HTMLInputElement> this.shadow.querySelector('input[type="file"]'), this )
 	}
 	
@@ -171,6 +177,8 @@ class XCupeController
 			{
 				canvas.height = Math.round( image.height / imageToCanvasRatio.width )
 			}
+			
+			image = canvas
 		}
 		
 		// scaling image

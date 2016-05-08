@@ -1,4 +1,4 @@
-class XCupe extends HTMLElement
+class XCupe extends HTMLInputElement
 {
 	controller: XCupeController = null;
 	mousedownListener: ()=>{} = null;
@@ -9,13 +9,11 @@ class XCupe extends HTMLElement
 	settings: Settings;
 	
 	moveImage = null;
-	isMouseDown = false;
 	numberX = 0;
 	
 	createdCallback()
 	{
 		this.controller = new XCupeController( this );
-		this.controller.canvas.setDimensions({ width: 500, height: 500 });
 	
 		this.mousedownListener = this.mousedown.bind( this )
 		this.mousemoveListener = this.mousemove.bind( this )
@@ -30,11 +28,13 @@ class XCupe extends HTMLElement
 			width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
 			crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
 			align: this.getAttribute('align') || 'center',
-			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
-			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
-			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+			allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
+			allowDrop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
+			allowSelect: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
 			name: this.getAttribute('name') || '',
 		}
+		
+		this.controller.canvas.setDimensions({ width: this.settings.width, height: this.settings.height });
 		
 		this.moveImage = {
 			applied: false,
@@ -46,9 +46,8 @@ class XCupe extends HTMLElement
 		this.ondragover = ()=> { return false; }
 		this.addEventListener( 'drop', this.dropListener )
 		
-		this.isMouseDown = false;
-		
-		this.style.display = 'inline-block'
+		console.log( this.settings.name )
+		this.controller.inputText.name( this.settings.name )
 	}
 
 	attributeChangedCallback( attribute, oldVal, newVal )
@@ -85,19 +84,19 @@ class XCupe extends HTMLElement
 				
 			case 'allow-move':
 			
-				this.settings.allow_move = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowMove = newVal.trim().toLowerCase() === 'true';
 				break;
 				
 			
 			case 'allow-select':
 			
-				this.settings.allow_select = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowSelect = newVal.trim().toLowerCase() === 'true';
 				break;
 				
 				
 			case 'allow-drop':
 			
-				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowDrop = newVal.trim().toLowerCase() === 'true';
 				break;
 				
 				
@@ -118,13 +117,7 @@ class XCupe extends HTMLElement
 	{
 		event.preventDefault();
 		
-		if ( this.isMouseDown )
-		{
-			return;
-		}
-		
 		this.numberX = Math.random();
-		this.isMouseDown = true;
 		
 		this.moveImage =
 		{
@@ -137,7 +130,7 @@ class XCupe extends HTMLElement
 		document.addEventListener( 'mouseup', this.mouseupListener )
 		document.addEventListener( 'touchend', this.mouseupListener )
 		
-		if ( this.controller.isImageDrawn )
+		if ( this.controller.isImageDrawn && this.settings.allowMove )
 		{
 			this.moveImage.timeout = setTimeout(()=>
 			{
@@ -165,14 +158,6 @@ class XCupe extends HTMLElement
 	{
 		event.preventDefault();
 		
-		if ( ! this.isMouseDown )
-		{
-			console.log('catched!')
-			return;
-		}
-		
-		this.isMouseDown = false;
-		
 		clearTimeout( this.moveImage.timeout )
 		
 		document.removeEventListener( 'mouseup', this.mouseupListener )
@@ -190,7 +175,7 @@ class XCupe extends HTMLElement
 		
 		else
 		{
-			if ( this.settings.allow_select )
+			if ( this.settings.allowSelect )
 			{
 				this.controller.inputFile.open()
 			}
@@ -201,7 +186,7 @@ class XCupe extends HTMLElement
 	{
 		event.preventDefault()
 		
-		if ( this.settings.allow_drop )
+		if ( this.settings.allowDrop )
 		{
 			this.controller.readAndDrawImage( event.dataTransfer.files )
 		}
@@ -211,6 +196,6 @@ class XCupe extends HTMLElement
 	
 	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
 	{
-		this.controller.getContent.call( this.controller, arguments );
+		return this.controller.getContent.apply( this.controller, arguments );
 	}
 }

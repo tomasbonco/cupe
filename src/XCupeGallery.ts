@@ -23,9 +23,9 @@ class XCupeGallery extends HTMLElement
 			width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
 			crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
 			align: this.getAttribute('align') || 'center',
-			allow_move: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
-			allow_drop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
-			allow_select: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
+			allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
+			allowDrop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
+			allowSelect: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
 			name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : '',
 		}
 	}
@@ -62,20 +62,20 @@ class XCupeGallery extends HTMLElement
 				
 			case 'allow-move':
 			
-				this.settings.allow_move = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowMove = newVal.trim().toLowerCase() === 'true';
 				break;
 				
 				
 			case 'allow-select':
 			
-				this.settings.allow_select = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowSelect = newVal.trim().toLowerCase() === 'true';
 				applyOnChildren = false
 				break;
 				
 				
 			case 'allow-drop':
 			
-				this.settings.allow_drop = newVal.trim().toLowerCase() === 'true';
+				this.settings.allowDrop = newVal.trim().toLowerCase() === 'true';
 				applyOnChildren = false
 				break;
 				
@@ -98,7 +98,7 @@ class XCupeGallery extends HTMLElement
         event.stopPropagation()
 		event.preventDefault()
 
-		if ( event.path[0] === this && this.settings.allow_select )
+		if ( event.path[0] === this && this.settings.allowSelect )
 		{
 			this.controller.inputFile.open()
 		}
@@ -108,7 +108,7 @@ class XCupeGallery extends HTMLElement
 	{
 		event.preventDefault()
 		
-		if ( this.settings.allow_drop )
+		if ( this.settings.allowDrop )
 		{
 			this.controller.readAndDrawImage( event.dataTransfer.files )
 		}
@@ -118,6 +118,6 @@ class XCupeGallery extends HTMLElement
 	
 	getContent()
 	{
-		this.controller.getContent.call( this.controller, arguments );
+		return this.controller.getContent.apply( this.controller, arguments );
 	}
 }

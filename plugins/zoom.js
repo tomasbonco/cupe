@@ -31,8 +31,8 @@ function makeCupeZoomable( elementOrController, userSettings )
 			return;
 		}
 		
-		var delta = Math.max( -1, Math.min( 1, (event.wheelDelta || -event.detail))); // returns direction 1 (up) or -1 (down) of mouse wheel movement
-		var nextZoom = Math.round( (this.element.settings.zoom.zoom + (delta * this.element.settings.zoom.step)) * 10 ) / 10; // nextZoom = delta * settings.step; rest is solving float inaccuracy; returns zoom like: 1.1 ~> 1.7 ~> 2.3
+		var direction = Math.max( -1, Math.min( 1, (event.wheelDelta || -event.detail))); // returns direction 1 (up) or -1 (down) of mouse wheel movement
+		var nextZoom = Math.round( (this.element.settings.zoom.zoom + (direction * this.element.settings.zoom.step)) * 10 ) / 10; // nextZoom = direction * settings.step; rest is solving float inaccuracy; returns zoom like: 1.1 ~> 1.7 ~> 2.3
 		
 		
 		if ( nextZoom < this.element.settings.zoom.minZoom || nextZoom > this.element.settings.zoom.maxZoom )
@@ -75,8 +75,8 @@ function makeCupeZoomable( elementOrController, userSettings )
 			var originalImage = self.originalImage;
 			var workingImage = self.workingImage;
 			
-			var widthZoom = Math.ceil( (originalImage.width / workingImage.width) * 10 ) / 10;
-			var heightZoom = Math.ceil( (originalImage.height / workingImage.height) * 10 ) / 10;
+			var widthZoom = Math.floor( (originalImage.width / workingImage.width) * 10 ) / 10;
+			var heightZoom = Math.floor( (originalImage.height / workingImage.height) * 10 ) / 10;
 			
 			self.element.settings.zoom.maxZoom = widthZoom < heightZoom ? widthZoom : heightZoom;
 		})
@@ -88,7 +88,7 @@ function makeCupeZoomable( elementOrController, userSettings )
 	{
 		var dimensions = originalResizeDimensions.apply( this, arguments );
 		
-		if ( this.element.settings.crop ) // if crop is not allowed, zoom is not allowed too and we don't want to conutinue when zoom is not allowed
+		if ( this.element.settings.crop ) // if crop is not allowed, zoom is not allowed too and we don't want to continue when zoom is not allowed
 		{
 			dimensions.image.width = Math.round( dimensions.image.width * this.element.settings.zoom.zoom );
 			dimensions.image.height = Math.round( dimensions.image.height * this.element.settings.zoom.zoom );
