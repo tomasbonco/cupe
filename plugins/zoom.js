@@ -1,4 +1,4 @@
-function makeCupeZoomable( elementOrController, userSettings )
+function XCupeZoom( elementOrController, userSettings )
 {
 	if ( ! elementOrController ) elementOrController = XCupeController;
 	
@@ -8,7 +8,7 @@ function makeCupeZoomable( elementOrController, userSettings )
 	}
 	
 	
-	var controller =  ( elementOrController instanceof XCupe ) ? element.controller : elementOrController.prototype; 
+	var controller =  ( elementOrController instanceof XCupe ) ? elementOrController.controller : elementOrController.prototype; 
 	
 	var originalRnDImg = controller.readAndDrawImage;
 	var originalResizeDimensions = controller.getResizeDimensions;

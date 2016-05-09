@@ -36,14 +36,14 @@ gulp.task('copy-html', ['compile'], function(){
     .pipe(gulp.dest('dist/'))
 });
 
-gulp.task('remove_temp', ['copy-html'], function(){
+gulp.task('remove-temp', ['copy-html'], function(){
   return gulp.src(['src/temp_*.*'])
     .pipe(rimraf())
 });
 
-gulp.task('watch', ['remove_temp'], function(){
+gulp.task('watch', ['remove-temp'], function(){
 	gulp.watch( ['src/**/*.*', '!src/**/temp_*.*'], function(){
-		gulp.start('remove_temp');
+		gulp.start('remove-temp');
 	});
 })
 

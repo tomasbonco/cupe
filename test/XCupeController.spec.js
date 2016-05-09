@@ -6,7 +6,8 @@ var stubElement = {
 		x.innerHTML = '<canvas></canvas><input type="file"><input type="text">';
 		x.appendChild = function(){};
 		return x;
-	}
+	},
+	appendChild: function(){}
 }
 
 var owner = { querySelector: function(){ return { content: { cloneNode: function(){} }}}}
@@ -71,8 +72,8 @@ describe( 'XCupeController', function()
 			
 			var result = controller.getResizeDimensions( image, canvas, false );
 			
-			result.image.width.should.equals( 600 );
-			result.image.height.should.equals( 300 );
+			result.image.width.should.equals( 400 );
+			result.image.height.should.equals( 200 );
 			result.canvas.width.should.equals( 400 );
 			result.canvas.height.should.equals( 200 );
 		})
@@ -84,8 +85,8 @@ describe( 'XCupeController', function()
 			
 			var result = controller.getResizeDimensions( image, canvas, false );
 			
-			result.image.width.should.equals( 300 );
-			result.image.height.should.equals( 600 );
+			result.image.width.should.equals( 150 );
+			result.image.height.should.equals( 300 );
 			result.canvas.width.should.equals( 150 );
 			result.canvas.height.should.equals( 300 );
 		})

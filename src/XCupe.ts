@@ -119,11 +119,14 @@ class XCupe extends HTMLInputElement
 		
 		this.numberX = Math.random();
 		
+		let currentX = ( event.changedTouches && event.changedTouches[0] ) ? event.changedTouches[0].pageX : event.pageX;
+		let currentY = ( event.changedTouches && event.changedTouches[0] ) ? event.changedTouches[0].pageY : event.pageY;
+		
 		this.moveImage =
 		{
 			applied: false,
 			timeout: null,
-			position: { x: event.pageX, y: event.pageY },
+			position: { x: currentX, y: currentY },
 			crop: this.controller.getCrop()
 		};
 	
@@ -145,10 +148,20 @@ class XCupe extends HTMLInputElement
 	{
 		event.preventDefault();
 		
-		let newCropTop =  this.moveImage.crop.top - ( event.pageY - this.moveImage.position.y )
-		let newCropLeft =  this.moveImage.crop.left - ( event.pageX - this.moveImage.position.x )
+		console.log('mouseMOVE!')
+		
+		if ( event.changedTouches && event.changedTouches.length > 1 ) return;
+		
+		let currentX = ( event.changedTouches && event.changedTouches[0] ) ? event.changedTouches[0].pageX : event.pageX;
+		let currentY = ( event.changedTouches && event.changedTouches[0] ) ? event.changedTouches[0].pageY : event.pageY;
+		
+		console.log('ZUZUZU')
+		
+		let newCropTop =  this.moveImage.crop.top - ( currentY - this.moveImage.position.y )
+		let newCropLeft =  this.moveImage.crop.left - ( currentX - this.moveImage.position.x )
 		
 		this.controller.setCrop( newCropTop, newCropLeft )
+		console.log( newCropTop, newCropLeft )
 		
 		let drawCallack = ()=>{ this.controller.redrawImage.call(this.controller, Step.Draw ) }
 		requestAnimationFrame( drawCallack )
@@ -157,6 +170,8 @@ class XCupe extends HTMLInputElement
 	mouseup()
 	{
 		event.preventDefault();
+		
+		console.log('mouseUP!')
 		
 		clearTimeout( this.moveImage.timeout )
 		
