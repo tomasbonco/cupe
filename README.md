@@ -88,7 +88,7 @@ xcupe.getContent( 2 ); // returns Blob. Not implemented yet.
 
 If you want multiupload, use `<x-cupe-gallery>` element. Settings are the same. Element does not support sending images through `<form>` yet.
 
-```
+```html
 <x-cupe-gallery width="300" height="300"></x-cupe-gallery>
 ```
 
