@@ -196,6 +196,8 @@ var XCupe = (function (_super) {
     XCupe.prototype.mousedown = function (event) {
         var _this = this;
         event.preventDefault();
+        if (event.button && event.button !== 1)
+            return;
         this.numberX = Math.random();
         var currentX = (event.changedTouches && event.changedTouches[0]) ? event.changedTouches[0].pageX : event.pageX;
         var currentY = (event.changedTouches && event.changedTouches[0]) ? event.changedTouches[0].pageY : event.pageY;
@@ -301,8 +303,10 @@ var XCupeController = (function () {
             this.originalImage = newOriginal;
             step = Step.Resize;
         }
-        if (!this.originalImage)
+        if (!this.originalImage) {
+            this.canvas.setDimensions({ width: this.element.settings.width, height: this.element.settings.height });
             return; // there's nothing to process
+        }
         // resize
         if ((step <= Step.Resize && !reverse) || (step >= Step.Resize && reverse)) {
             var newDimensions = this.getResizeDimensions({ width: this.originalImage.width, height: this.originalImage.height }, { width: this.element.settings.width, height: this.element.settings.height }, this.element.settings.crop);

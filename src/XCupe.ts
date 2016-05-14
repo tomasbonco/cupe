@@ -117,6 +117,8 @@ class XCupe extends HTMLInputElement
 	{
 		event.preventDefault();
 		
+		if ( event.button && event.button !== 1 ) return;
+		
 		this.numberX = Math.random();
 		
 		let currentX = ( event.changedTouches && event.changedTouches[0] ) ? event.changedTouches[0].pageX : event.pageX;

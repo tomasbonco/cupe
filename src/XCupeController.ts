@@ -47,7 +47,11 @@ class XCupeController
 			step = Step.Resize;
 		}
 		
-		if ( ! this.originalImage ) return; // there's nothing to process
+		if ( ! this.originalImage )
+		{
+			this.canvas.setDimensions({ width: this.element.settings.width, height: this.element.settings.height })
+			return; // there's nothing to process
+		}
 		
 		
 		// resize

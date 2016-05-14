@@ -44,7 +44,17 @@ function XCupeZoom( elementOrController, userSettings )
 		
 		var crop = this.getCrop();
 		
-		this.redrawImage( 0, undefined, true ); // Resize
+		
+		// calculate crop ratios
+		
+		var mouseLeft = event.offsetX;
+		var mouseTop = event.offsetY;
+		crop.left += mouseLeft * direction * this.element.settings.zoom.step
+		crop.top += mouseTop * direction * this.element.settings.zoom.step
+		
+		// resize
+		this.redrawImage( 0, undefined, true );
+		
 		this.setCrop( crop.top, crop.left ) // Crop; it solves problem of empty space while unzooming
 		this.redrawImage( 2 ); // Draw
 	}
