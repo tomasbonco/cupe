@@ -61,7 +61,7 @@ class XCupeController
 		
 			this.canvas.setDimensions( newDimensions.canvas )
 			
-			this.workingImage = this.scaleImage( this.originalImage, newDimensions.image )
+			this.workingImage = this.scaleImage( this.originalImage, newDimensions.image, this.element.settings.quality )
 		}
 		
 		// crop
@@ -215,6 +215,9 @@ class XCupeController
 	 */
 	scaleImage( image: HTMLImageElement|HTMLCanvasElement, dimensions: Dimensions, quality: number = 3 ): HTMLCanvasElement
 	{
+		if ( quality < 1 ) quality = 1;
+		if ( quality > 25 ) quality = 5; // You crazy man?
+		
 		let step: Dimensions =
 		{
 			width: (dimensions.width - image.width) * ( 1 / quality ),

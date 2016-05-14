@@ -139,6 +139,7 @@ var XCupe = (function (_super) {
         this.settings = {
             height: this.getAttribute('height') ? parseInt(this.getAttribute('height')) : 500,
             width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
+            quality: this.getAttribute('quality') ? parseInt(this.getAttribute('quality')) : 3,
             crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
             align: this.getAttribute('align') || 'center',
             allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
@@ -167,6 +168,9 @@ var XCupe = (function (_super) {
             case 'width':
                 this.settings.width = parseInt(newVal);
                 this.controller.redrawImage(Step.Resize);
+                break;
+            case 'quality':
+                this.settings.quality = parseInt(newVal);
                 break;
             case 'crop':
                 this.settings.crop = newVal.trim().toLowerCase() === 'true';
@@ -236,7 +240,6 @@ var XCupe = (function (_super) {
     };
     XCupe.prototype.mouseup = function () {
         event.preventDefault();
-        console.log('mouseUP!');
         clearTimeout(this.moveImage.timeout);
         document.removeEventListener('mouseup', this.mouseupListener);
         document.removeEventListener('touchend', this.mouseupListener);
@@ -311,7 +314,7 @@ var XCupeController = (function () {
         if ((step <= Step.Resize && !reverse) || (step >= Step.Resize && reverse)) {
             var newDimensions = this.getResizeDimensions({ width: this.originalImage.width, height: this.originalImage.height }, { width: this.element.settings.width, height: this.element.settings.height }, this.element.settings.crop);
             this.canvas.setDimensions(newDimensions.canvas);
-            this.workingImage = this.scaleImage(this.originalImage, newDimensions.image);
+            this.workingImage = this.scaleImage(this.originalImage, newDimensions.image, this.element.settings.quality);
         }
         // crop
         if ((step <= Step.Crop && this.element.settings.crop && !reverse) || (step >= Step.Crop && reverse)) {
@@ -418,6 +421,10 @@ var XCupeController = (function () {
      */
     XCupeController.prototype.scaleImage = function (image, dimensions, quality) {
         if (quality === void 0) { quality = 3; }
+        if (quality < 1)
+            quality = 1;
+        if (quality > 25)
+            quality = 5; // You crazy man?
         var step = {
             width: (dimensions.width - image.width) * (1 / quality),
             height: (dimensions.height - image.height) * (1 / quality)
@@ -552,6 +559,7 @@ var XCupeGallery = (function (_super) {
         this.settings = {
             height: this.getAttribute('height') ? parseInt(this.getAttribute('height')) : 500,
             width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
+            quality: this.getAttribute('quality') ? parseInt(this.getAttribute('quality')) : 3,
             crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
             align: this.getAttribute('align') || 'center',
             allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
@@ -568,6 +576,9 @@ var XCupeGallery = (function (_super) {
                 break;
             case 'width':
                 this.settings.width = parseInt(newVal);
+                break;
+            case 'quality':
+                this.settings.quality = parseInt(newVal);
                 break;
             case 'crop':
                 this.settings.crop = newVal.trim().toLowerCase() === 'true';

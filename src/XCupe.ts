@@ -26,6 +26,7 @@ class XCupe extends HTMLInputElement
 		this.settings = {
 			height: this.getAttribute('height') ? parseInt(this.getAttribute('height')) : 500,
 			width: this.getAttribute('width') ? parseInt(this.getAttribute('width')) : 500,
+			quality: this.getAttribute('quality') ? parseInt(this.getAttribute('quality')) : 3,
 			crop: this.getAttribute('crop') ? this.getAttribute('crop').trim().toLowerCase() === 'true' : true,
 			align: this.getAttribute('align') || 'center',
 			allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
@@ -65,6 +66,12 @@ class XCupe extends HTMLInputElement
 			
 				this.settings.width = parseInt( newVal )
 				this.controller.redrawImage( Step.Resize )
+				break;
+				
+				
+			case 'quality':
+							
+				this.settings.quality = parseInt( newVal );
 				break;
 				
 				
@@ -172,8 +179,6 @@ class XCupe extends HTMLInputElement
 	mouseup()
 	{
 		event.preventDefault();
-		
-		console.log('mouseUP!')
 		
 		clearTimeout( this.moveImage.timeout )
 		

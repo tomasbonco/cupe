@@ -43,6 +43,7 @@ You might want to add [webcomponents.js](https://github.com/webcomponents/webcom
 * **allowDrop** - set to `true`, if you want to allow Drag&Drop (default: `true`)
 * **allowSelect** - set to `true`, if you want to allow user to select an image using modal window after click (default: `true`)
 * **name** - use only inside `<form>`, when you **don't** want to use `XMLHttpRequest`; works as expected
+* **quality** - how many time should be image redrawn when resizing image; higher number - better quality, but it takes longer (default 3, recommended max. is 5)
 
 
 ## Usage in forms

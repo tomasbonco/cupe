@@ -12,6 +12,7 @@ interface Settings
 {
 	height: number;
 	width: number;
+	quality: number;
 	crop: boolean;
 	align: string;
 	allowMove: boolean;
