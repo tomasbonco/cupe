@@ -1,11 +1,11 @@
 # Cupe
 
-Cupe is Web Component that allows client-side image manipulation. It's rendering image in canvas so you have access to pixels all the time. It's also easily extensible and fastest kid in the town!
+Cupe is Web Component that allows client-side image manipulation (resizing and cropping). It's rendering image in canvas so you have access to pixels all the time. It's also easily extensible and fastest kid in the town!
 
 
 ## Example
 
-```
+```html
 <script src="bower_components/webcomponentsjs/webcomponents.js"></script> <!-- Compatibility -->
 <link rel="import" href="x-cupe.html">
 
@@ -13,11 +13,15 @@ Cupe is Web Component that allows client-side image manipulation. It's rendering
 ```
 
 
-## Benefints
+## Benefits
 
 * Support for usage in `<form>`
+* Does image resizing and image cropping
+* Sends only resized and cropped image (you can save money when using cellular data!)
+* Instant image preview
+* Support for multiupload (or gallery, if you want)
 * Mobile devices supported
-* Super-fast image reading and manipulation
+* Super-fast image manipulation
 * Web Component (doesn't require 3rd-party libraries)
 * Supports Drag&Drop
 * Easily extensible
@@ -38,14 +42,14 @@ You might want to add [webcomponents.js](https://github.com/webcomponents/webcom
 * **allowMove** - set to `true`, if you want to allow user to set crop using mouse (default: `true`)
 * **allowDrop** - set to `true`, if you want to allow Drag&Drop (default: `true`)
 * **allowSelect** - set to `true`, if you want to allow user to select an image using modal window after click (default: `true`)
-* **name** - use only inside `<form>`, when you **don't** want to use `XMLHttpRequest`, works as expected
+* **name** - use only inside `<form>`, when you **don't** want to use `XMLHttpRequest`; works as expected
 
 
 ## Usage in forms
 
-You can send images in forms. They'll be transferred as Base64 strings in POST. Don't forget to add name attribute. 
+You can send images in forms. They'll be transferred as Base64 strings in POST. Don't forget to add `name` attribute. 
 
-```
+```html
 <form action="process.php" method="POST">
 	
 	<x-cupe width="450" height="450" name="cupe"></x-cupe>
@@ -58,7 +62,7 @@ You can send images in forms. They'll be transferred as Base64 strings in POST. 
 
 You can get image data by selecting image and calling `getContent( contentType, mimeType, quality )` method on it.
 
-```
+```javascript
 let xcupe = document.querySelector( 'x-cupe' );
 xcupe.getContent();
 
@@ -82,7 +86,7 @@ xcupe.getContent( 2 ); // returns Blob. Not implemented yet.
 
 ## Multiupload
 
-If you want multiupload, use `<x-cupe-gallery>` element. Settings are the same. Element does not support sending images through `<form>`.
+If you want multiupload, use `<x-cupe-gallery>` element. Settings are the same. Element does not support sending images through `<form>` yet.
 
 ```
 <x-cupe-gallery width="300" height="300"></x-cupe-gallery>
