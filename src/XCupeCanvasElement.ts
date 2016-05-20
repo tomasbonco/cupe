@@ -9,18 +9,39 @@ class XCupeCanvasElement
         this.context = this.element.getContext('2d');
     }
 	
-    setDimensions( newDimensions: Dimensions, height?: number ): void
+	/**
+	 * Sets canvas dimensions.
+	 * @param {Dimensions} newDimensions - new dimensions
+	 */
+    setDimensions( newDimensions: Dimensions ): void
 	{
         this.element.width = newDimensions.width;
         this.element.height = newDimensions.height;
     }
 	
+	
+	/**
+	 * Returns dimensions of canvas
+	 * @return {Dimensions} dimensions of canvas 
+	 */
     getDimensions(): Dimensions
 	{
         return { width: this.element.width, height: this.element.height };
     }
 	
-	// HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap
+	
+	/**
+	 * Draws source to canvas.
+	 * @param {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement} source - source images
+	 * @param {number} sx - x of source where to start
+	 * @param {number} sy - y of source where to start
+	 * @param {number} sWidth - width of source that will be drawn
+	 * @param {number} sHeight - height of source that will be drawn
+	 * @param {number} dx - x of destination where to start
+	 * @param {number} dy - y of destination where to start
+	 * @param {number} dWidth - width of destination box where source will be drawn
+	 * @param {number} dHeight - height of destination box where source will be drawn 
+	 */
 	drawImage( source: HTMLImageElement|HTMLVideoElement|HTMLCanvasElement, sx: number = 0, sy: number = 0, sWidth: number = -1, sHeight: number = -1, dx: number = 0, dy: number = 0, dWidth: number = -1, dHeight: number = -1 ): void
 	{
 		if ( sWidth === -1 ) sWidth = source.width ? source.width : 0;
@@ -32,7 +53,14 @@ class XCupeCanvasElement
 		this.context.drawImage( source, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight )
 	}
 	
-	getDataUrl( mimeType: string = "image/png", quality: number = 0.92 )
+	
+	/**
+	 * Saves image as DataURL (Base64 string).
+	 * @param {string} mimeType - format of image
+	 * @param {number} quality - quality of image
+	 * @return {string} Base64 representation of image
+	 */
+	getDataUrl( mimeType: string = "image/png", quality: number = 0.92 ): string
 	{
 		if ( mimeType !== 'image/jpg' && mimeType !== 'image/png' && mimeType !== 'image/webp')
 		{

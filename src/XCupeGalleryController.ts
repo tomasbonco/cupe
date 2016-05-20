@@ -12,6 +12,10 @@ class XCupeGalleryController
 		this.shadow.removeChild( this.shadow.querySelector('canvas') );
 	}
 
+
+	/**
+	 * Custom Element setup.
+	 */
 	setupComponent()
 	{
 		// Create a shadow root
@@ -24,6 +28,12 @@ class XCupeGalleryController
 		this.inputFile = new XCupeInputFileElement( <HTMLInputElement> this.shadow.querySelector('input[type="file"]'), this, true )
 	}
 	
+	
+	/**
+	 * It reads image files loads image and creates x-cupe elements.
+	 * @param {any} files - data to be converted
+	 * @param {Promise} promise of converted image
+	 */
 	readAndDrawImage( files )
 	{
 		for ( let file of files )
@@ -46,6 +56,13 @@ class XCupeGalleryController
 		}
 	}
 	
+	
+	/**
+	 * Updates attibutes to children X-Cupe elements.
+	 * @param {string} attribute - name of changed attribute
+	 * @param {string} oldVal - old value
+	 * @param {string} - new value
+	 */
 	updateChildAttribute( attribute, oldVal, newVal ): void
 	{
 		this.getChildrenAsArray().forEach( xcupe =>
@@ -54,6 +71,15 @@ class XCupeGalleryController
 		})
 	}
 	
+	
+	/**
+	 * Returns content of x-cupe elements.
+	 * @param {string} type - Array or Map
+	 * @param {OutputType} contentType - type of output (check interface for allowed values)
+	 * @param {string} mimeType - if contentType returns image, this param can specify image format
+	 * @param {number} quality - quality if image format specified in mimeType supports quality
+	 * @return {any} image content in format based on contentType
+	 */
 	getContent( type: string = "Array", contentType: OutputType, mimeType: string = "image/png", quality: number = 0.92 )
 	{
 		type = type.toLowerCase();
@@ -81,6 +107,11 @@ class XCupeGalleryController
 		return ( type === 'map' ) ? contentMap : contentArray;
 	}
 	
+	
+	/**
+	 * Returns children X-Cupe elements as array.
+	 * @return {XCupe[]} X-Cupe elements
+	 */
 	getChildrenAsArray(): XCupe[]
 	{
 		var children = this.element.querySelectorAll('x-cupe');

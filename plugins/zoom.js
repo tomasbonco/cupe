@@ -1,5 +1,7 @@
 function XCupeZoom( elementOrController, userSettings )
 {
+	// If first argument is empty, it means plugin should be applied to all elements.
+	
 	if ( ! elementOrController ) elementOrController = XCupeController;
 	
 	if ( ! ( elementOrController instanceof XCupe ) && ! ( elementOrController === XCupeController))
@@ -7,12 +9,14 @@ function XCupeZoom( elementOrController, userSettings )
 		throw new Error('Neither element, nor controller supplied!');
 	}
 	
-	
 	var controller =  ( elementOrController instanceof XCupe ) ? elementOrController.controller : elementOrController.prototype; 
 	
+	
+	// We save references to original functions, we're going to rewrite.
 	var originalRnDImg = controller.readAndDrawImage;
 	var originalResizeDimensions = controller.getResizeDimensions;
 	
+	// Settings for this plugin
 	var settings = 
 	{
 		attached: false, // don't change this, private property used to determine if current element have mouswheel events attached or not
@@ -23,7 +27,10 @@ function XCupeZoom( elementOrController, userSettings )
 	}
 	
 	
-	// Zoom function. It calculates zoom ratio.
+	/**
+	 * Zooms image. Applied when user uses middle mouse button to zoom.
+	 * @param {MouseEvent} event - mouse event
+	 */
 	var zoom = function( event )
 	{
 		if ( ! this.element.settings.crop )
@@ -42,17 +49,15 @@ function XCupeZoom( elementOrController, userSettings )
 		
 		this.element.settings.zoom.zoom = nextZoom;
 		
+		
+		// Calculate crop ratios
 		var crop = this.getCrop();
-		
-		
-		// calculate crop ratios
-		
 		var mouseLeft = event.offsetX;
 		var mouseTop = event.offsetY;
 		crop.left += mouseLeft * direction * this.element.settings.zoom.step
 		crop.top += mouseTop * direction * this.element.settings.zoom.step
 		
-		// resize
+		// Resize
 		this.redrawImage( 0, undefined, true );
 		
 		this.setCrop( crop.top, crop.left ) // Crop; it solves problem of empty space while unzooming
@@ -67,14 +72,18 @@ function XCupeZoom( elementOrController, userSettings )
 	{
 		var self = this;
 		
+		// Applies zoom settings
 		if ( ! self.element.settings.zoom )
 		{
 			self.element.settings.zoom = Object.assign( {}, settings, userSettings );
 		}
 		
+		
+		// We run original readAndDrawImage function. This step is very important, because our reference might already be changed by other extensions.
 		return originalRnDImg.apply( self, arguments )
-		.then( function()
+		.then( function() // Then we apply our extension
 		{
+			// Attach to mouse wheel events, and fire zoom function
 			if ( ! self.element.settings.zoom.attached )
 			{
 				self.element.addEventListener( 'mousewheel', zoom.bind(self), false );
@@ -82,6 +91,7 @@ function XCupeZoom( elementOrController, userSettings )
 				self.element.settings.zoom.attached = true;
 			}
 			
+			// Calculate max zoom
 			var originalImage = self.originalImage;
 			var workingImage = self.workingImage;
 			

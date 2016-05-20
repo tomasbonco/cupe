@@ -11,6 +11,9 @@ class XCupe extends HTMLInputElement
 	moveImage = null;
 	numberX = 0;
 	
+	/**
+	 * Applied when element is created.
+	 */
 	createdCallback()
 	{
 		this.controller = new XCupeController( this );
@@ -50,7 +53,13 @@ class XCupe extends HTMLInputElement
 		console.log( this.settings.name )
 		this.controller.inputText.name( this.settings.name )
 	}
-
+	
+	/**
+	 * Applied when attribute changes.
+	 * @param {string} attribute - name of changed attribute
+	 * @param {string} oldVal - old value
+	 * @param {string} - new value
+	 */
 	attributeChangedCallback( attribute, oldVal, newVal )
 	{
 		switch ( attribute )
@@ -120,6 +129,11 @@ class XCupe extends HTMLInputElement
 		}
 	}
 	
+	
+	/**
+	 * Applied as callback of mousedown event.
+	 * @param {MouseEvent} event - mouse event 
+	 */
 	mousedown( event )
 	{
 		event.preventDefault();
@@ -153,6 +167,11 @@ class XCupe extends HTMLInputElement
 		}
 	}
 	
+	
+	/**
+	 * Applied as callback of mousemove event.
+	 * @param {MouseEvent} event - mouse event 
+	 */
 	mousemove( event )
 	{
 		event.preventDefault();
@@ -176,6 +195,10 @@ class XCupe extends HTMLInputElement
 		requestAnimationFrame( drawCallack )
 	}
 	
+	
+	/**
+	 * Applied as callback of mouseup event. 
+	 */
 	mouseup()
 	{
 		event.preventDefault();
@@ -204,6 +227,11 @@ class XCupe extends HTMLInputElement
 		}
 	}
 	
+	
+	/**
+	 * Applied as callback of drop event.
+	 * @param {Event} event - drop event
+	 */
 	drop( event )
 	{
 		event.preventDefault()
@@ -216,6 +244,14 @@ class XCupe extends HTMLInputElement
 		return false
 	}
 	
+	
+	/**
+	 * Returns content of x-cupe element.
+	 * @param {OutputType} contentType - type of output (check interface for allowed values)
+	 * @param {string} mimeType - if contentType returns image, this param can specify image format
+	 * @param {number} quality - quality if image format specified in mimeType supports quality
+	 * @return {any} image content in format based on contentType
+	 */
 	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
 	{
 		return this.controller.getContent.apply( this.controller, arguments );

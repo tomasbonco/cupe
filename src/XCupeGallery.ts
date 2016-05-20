@@ -6,6 +6,10 @@ class XCupeGallery extends HTMLElement
 	
 	settings: Settings;
 	
+	
+	/**
+	 * Applied when element is created.
+	 */
 	createdCallback()
 	{
 		this.controller = new XCupeGalleryController( this );
@@ -30,7 +34,14 @@ class XCupeGallery extends HTMLElement
 			name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : '',
 		}
 	}
-
+	
+	
+	/**
+	 * Applied when attribute changes.
+	 * @param {string} attribute - name of changed attribute
+	 * @param {string} oldVal - old value
+	 * @param {string} - new value
+	 */
 	attributeChangedCallback(attribute, oldVal, newVal)
 	{
 		let applyOnChildren = true; // when true attribute change will be applied to children - <x-cupe> elements
@@ -99,6 +110,11 @@ class XCupeGallery extends HTMLElement
 		}
 	}
 	
+	
+	/**
+	 * Applied as callback of click event.
+	 * @param {MouseEvent} event - click event
+	 */
 	clicked( event )
     {
         event.stopPropagation()
@@ -110,6 +126,11 @@ class XCupeGallery extends HTMLElement
 		}
     }
 	
+	
+	/**
+	 * Applied as callback of drop event.
+	 * @param {Event} event - drop event
+	 */
 	drop( event )
 	{
 		event.preventDefault()
@@ -122,6 +143,14 @@ class XCupeGallery extends HTMLElement
 		return false
 	}
 	
+	
+	/**
+	 * Returns content of x-cupe element.
+	 * @param {OutputType} contentType - type of output (check interface for allowed values)
+	 * @param {string} mimeType - if contentType returns image, this param can specify image format
+	 * @param {number} quality - quality if image format specified in mimeType supports quality
+	 * @return {any} image content in format based on contentType
+	 */
 	getContent()
 	{
 		return this.controller.getContent.apply( this.controller, arguments );

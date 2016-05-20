@@ -18,7 +18,10 @@ class XCupeController
 		this.setupComponent();
 	}
 
-	setupComponent()
+	/**
+	 * Custom Element setup.
+	 */
+	setupComponent(): void
 	{
 		// Create a shadow root
 		this.shadow = this.element['createShadowRoot']();
@@ -39,7 +42,13 @@ class XCupeController
 	}
 	
 	
-	redrawImage( step: Step = Step.Resize, newOriginal?: HTMLImageElement|HTMLCanvasElement, reverse = false )
+	/**
+	 * Runs procedure of drawing (resizing, caluclating crop, drawing) from specified step in given order.
+	 * @param {Step} step - step to start with
+	 * @param {HTMLImageElement|HTMLCanvasElement} newOriginal - new image to processed; not required
+	 * @param {boolean} reverse - direction of procedure
+	 */
+	redrawImage( step: Step = Step.Resize, newOriginal?: HTMLImageElement|HTMLCanvasElement, reverse = false ): void
 	{
 		if ( newOriginal )
 		{
@@ -79,11 +88,15 @@ class XCupeController
 	}
 	
 	
-	readFile( file: Blob|Blob[] )
+	/**
+	 * Reads image.
+	 * @param {Blobl|Blob[]} file - file to be read
+	 */
+	readFile( file: Blob|Blob[] ): void
 	{
 		return new Promise(( resolve, reject )=>
 		{
-			if ( file[0] )
+			if ( Array.isArray( file ) )
 			{
 				file = file[0]; // can read only first file
 			}
@@ -111,6 +124,11 @@ class XCupeController
 	}
 	
 	
+	/**
+	 * Converts image data into image.
+	 * @param {any} data - data to be converted
+	 * @return {Promise} promise of converted image
+	 */
 	loadImage( data )
 	{
 		return new Promise(( resolve, reject )=>
@@ -126,6 +144,8 @@ class XCupeController
 	
 	/**
 	 * Shorthand. It reads image file, loads image and draws resized & cropped image.
+	 * @param {any} data - data to be converted
+	 * @param {Promise} promise of converted image
 	 */
 	readAndDrawImage( file: Blob|Blob[] )
 	{
@@ -260,9 +280,11 @@ class XCupeController
 	
 	
 	/**
-	 * Set crops limits
+	 * Converts align text into pixels.
+	 * @param {Dimensions} image - dimensions of original image
+	 * @param {Dimensions} canvas - dimensions of target (canvas) iumage
+	 * @param {string} cropString - alignment
 	 */
-	
 	convertCropToPx( image: Dimensions, canvas: Dimensions, cropString: string )
 	{
 		let parts = cropString.split(' ');
@@ -313,11 +335,22 @@ class XCupeController
 		return crop;
 	}
 	
+	
+	/**
+	 * Getter for crop.
+	 * @return {top: number, left: number} crop
+	 */
 	getCrop()
 	{
 		return { top: 0 - this.crop.top, left: 0 - this.crop.left }
 	}
 	
+	
+	/**
+	 * Sets crop.
+	 * @param {number} top - top crop
+	 * @param {number} left - left crop
+	 */
 	setCrop( top: number, left: number ): void
 	{
 		if ( top < 0 )
@@ -343,6 +376,10 @@ class XCupeController
 		this.crop = { left: 0 - left, top: 0 - top }
 	}
 	
+	
+	/**
+	 * Draws image into canvas.
+	 */
 	draw()
 	{
 		let crop: boolean = this.element.settings.crop;
@@ -357,6 +394,14 @@ class XCupeController
 		}
 	}
 	
+	
+	/**
+	 * Returns content of x-cupe element.
+	 * @param {OutputType} contentType - type of output (check interface for allowed values)
+	 * @param {string} mimeType - if contentType returns image, this param can specify image format
+	 * @param {number} quality - quality if image format specified in mimeType supports quality
+	 * @return {any} image content in format based on contentType
+	 */
 	getContent( contentType: OutputType = OutputType.DataUrl, mimeType: string = "image/png", quality: number = 0.92 ): any
 	{
 		switch( contentType )
@@ -384,6 +429,10 @@ class XCupeController
 		}
 	}
 	
+	
+	/**
+	 * Saves Base64 represention of image into input.
+	 */
 	saveToInput()
 	{
 		if ( this.element.settings.name )
