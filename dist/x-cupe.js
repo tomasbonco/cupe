@@ -33,28 +33,49 @@ var XCupeInputFileElement = (function () {
         this.element.addEventListener('change', this.changeListener);
         this.element.addEventListener('click', this.clickListener);
     }
+    /**
+     * Opens dialog to select image.
+     */
     XCupeInputFileElement.prototype.open = function () {
         this.element.click();
     };
+    /**
+     * Applied when image selected
+     * @param {Event} event - change event
+     */
     XCupeInputFileElement.prototype.onChange = function (event) {
         this.controller.readAndDrawImage(event.target.files);
     };
+    /**
+     * Applied as callback of click event.
+     * @param {MouseEvent} event - click event
+     */
     XCupeInputFileElement.prototype.clicked = function (event) {
         event.stopPropagation();
     };
     return XCupeInputFileElement;
-})();
+}());
 var XCupeInputTextElement = (function () {
     function XCupeInputTextElement(element) {
         this.element = null;
         this.element = element;
     }
+    /**
+     * Setter/getter for value.
+     * @param {string} newValue - new value
+     * @return {string} value of input element
+     */
     XCupeInputTextElement.prototype.val = function (newValue) {
         if (newValue) {
             this.element.value = newValue;
         }
         return this.element.value;
     };
+    /**
+     * Getter/setter for name.
+     * @param {string} newValue - new name
+     * @return {string} name of input element
+     */
     XCupeInputTextElement.prototype.name = function (newValue) {
         if (newValue) {
             this.element.setAttribute('name', newValue);
@@ -62,7 +83,7 @@ var XCupeInputTextElement = (function () {
         return this.element.getAttribute('name');
     };
     return XCupeInputTextElement;
-})();
+}());
 var XCupeCanvasElement = (function () {
     function XCupeCanvasElement(element) {
         this.element = null;
@@ -70,14 +91,33 @@ var XCupeCanvasElement = (function () {
         this.element = element ? element : document.createElement('canvas');
         this.context = this.element.getContext('2d');
     }
-    XCupeCanvasElement.prototype.setDimensions = function (newDimensions, height) {
+    /**
+     * Sets canvas dimensions.
+     * @param {Dimensions} newDimensions - new dimensions
+     */
+    XCupeCanvasElement.prototype.setDimensions = function (newDimensions) {
         this.element.width = newDimensions.width;
         this.element.height = newDimensions.height;
     };
+    /**
+     * Returns dimensions of canvas
+     * @return {Dimensions} dimensions of canvas
+     */
     XCupeCanvasElement.prototype.getDimensions = function () {
         return { width: this.element.width, height: this.element.height };
     };
-    // HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap
+    /**
+     * Draws source to canvas.
+     * @param {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement} source - source images
+     * @param {number} sx - x of source where to start
+     * @param {number} sy - y of source where to start
+     * @param {number} sWidth - width of source that will be drawn
+     * @param {number} sHeight - height of source that will be drawn
+     * @param {number} dx - x of destination where to start
+     * @param {number} dy - y of destination where to start
+     * @param {number} dWidth - width of destination box where source will be drawn
+     * @param {number} dHeight - height of destination box where source will be drawn
+     */
     XCupeCanvasElement.prototype.drawImage = function (source, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
         if (sx === void 0) { sx = 0; }
         if (sy === void 0) { sy = 0; }
@@ -97,6 +137,12 @@ var XCupeCanvasElement = (function () {
             dHeight = this.element.height;
         this.context.drawImage(source, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     };
+    /**
+     * Saves image as DataURL (Base64 string).
+     * @param {string} mimeType - format of image
+     * @param {number} quality - quality of image
+     * @return {string} Base64 representation of image
+     */
     XCupeCanvasElement.prototype.getDataUrl = function (mimeType, quality) {
         if (mimeType === void 0) { mimeType = "image/png"; }
         if (quality === void 0) { quality = 0.92; }
@@ -115,7 +161,7 @@ var XCupeCanvasElement = (function () {
         }
     };
     return XCupeCanvasElement;
-})();
+}());
 var XCupe = (function (_super) {
     __extends(XCupe, _super);
     function XCupe() {
@@ -128,6 +174,9 @@ var XCupe = (function (_super) {
         this.moveImage = null;
         this.numberX = 0;
     }
+    /**
+     * Applied when element is created.
+     */
     XCupe.prototype.createdCallback = function () {
         this.controller = new XCupeController(this);
         this.mousedownListener = this.mousedown.bind(this);
@@ -159,6 +208,12 @@ var XCupe = (function (_super) {
         console.log(this.settings.name);
         this.controller.inputText.name(this.settings.name);
     };
+    /**
+     * Applied when attribute changes.
+     * @param {string} attribute - name of changed attribute
+     * @param {string} oldVal - old value
+     * @param {string} - new value
+     */
     XCupe.prototype.attributeChangedCallback = function (attribute, oldVal, newVal) {
         switch (attribute) {
             case 'height':
@@ -197,6 +252,10 @@ var XCupe = (function (_super) {
                 break;
         }
     };
+    /**
+     * Applied as callback of mousedown event.
+     * @param {MouseEvent} event - mouse event
+     */
     XCupe.prototype.mousedown = function (event) {
         var _this = this;
         event.preventDefault();
@@ -222,6 +281,10 @@ var XCupe = (function (_super) {
             }, 150);
         }
     };
+    /**
+     * Applied as callback of mousemove event.
+     * @param {MouseEvent} event - mouse event
+     */
     XCupe.prototype.mousemove = function (event) {
         var _this = this;
         event.preventDefault();
@@ -238,6 +301,9 @@ var XCupe = (function (_super) {
         var drawCallack = function () { _this.controller.redrawImage.call(_this.controller, Step.Draw); };
         requestAnimationFrame(drawCallack);
     };
+    /**
+     * Applied as callback of mouseup event.
+     */
     XCupe.prototype.mouseup = function () {
         event.preventDefault();
         clearTimeout(this.moveImage.timeout);
@@ -255,6 +321,10 @@ var XCupe = (function (_super) {
             }
         }
     };
+    /**
+     * Applied as callback of drop event.
+     * @param {Event} event - drop event
+     */
     XCupe.prototype.drop = function (event) {
         event.preventDefault();
         if (this.settings.allowDrop) {
@@ -262,6 +332,13 @@ var XCupe = (function (_super) {
         }
         return false;
     };
+    /**
+     * Returns content of x-cupe element.
+     * @param {OutputType} contentType - type of output (check interface for allowed values)
+     * @param {string} mimeType - if contentType returns image, this param can specify image format
+     * @param {number} quality - quality if image format specified in mimeType supports quality
+     * @return {any} image content in format based on contentType
+     */
     XCupe.prototype.getContent = function (contentType, mimeType, quality) {
         if (contentType === void 0) { contentType = OutputType.DataUrl; }
         if (mimeType === void 0) { mimeType = "image/png"; }
@@ -269,7 +346,7 @@ var XCupe = (function (_super) {
         return this.controller.getContent.apply(this.controller, arguments);
     };
     return XCupe;
-})(HTMLInputElement);
+}(HTMLInputElement));
 var XCupeController = (function () {
     function XCupeController(xcupe) {
         this.element = null;
@@ -284,6 +361,9 @@ var XCupeController = (function () {
         this.element = xcupe;
         this.setupComponent();
     }
+    /**
+     * Custom Element setup.
+     */
     XCupeController.prototype.setupComponent = function () {
         // Create a shadow root
         this.shadow = this.element['createShadowRoot']();
@@ -299,6 +379,12 @@ var XCupeController = (function () {
         this.inputText = new XCupeInputTextElement(inputText);
         this.inputFile = new XCupeInputFileElement(this.shadow.querySelector('input[type="file"]'), this);
     };
+    /**
+     * Runs procedure of drawing (resizing, caluclating crop, drawing) from specified step in given order.
+     * @param {Step} step - step to start with
+     * @param {HTMLImageElement|HTMLCanvasElement} newOriginal - new image to processed; not required
+     * @param {boolean} reverse - direction of procedure
+     */
     XCupeController.prototype.redrawImage = function (step, newOriginal, reverse) {
         if (step === void 0) { step = Step.Resize; }
         if (reverse === void 0) { reverse = false; }
@@ -326,25 +412,34 @@ var XCupeController = (function () {
             this.draw();
         }
     };
+    /**
+     * Reads image.
+     * @param {Blobl|Blob[]} file - file to be read
+     */
     XCupeController.prototype.readFile = function (file) {
         return new Promise(function (resolve, reject) {
-            if (file[0]) {
+            if (Array.isArray(file)) {
                 file = file[0]; // can read only first file
             }
             if (file instanceof Blob) {
                 if (!file.type.match(/image.*/)) {
                     reject('Unsupported file type.');
                 }
-                var fileReader = new FileReader();
-                fileReader.onerror = function () { }; // TODO
-                fileReader.onprogress = function () { }; // TODO
-                fileReader.onload = function () {
-                    resolve(fileReader.result);
+                var fileReader_1 = new FileReader();
+                fileReader_1.onerror = function () { }; // TODO
+                fileReader_1.onprogress = function () { }; // TODO
+                fileReader_1.onload = function () {
+                    resolve(fileReader_1.result);
                 };
-                fileReader.readAsArrayBuffer(file);
+                fileReader_1.readAsArrayBuffer(file);
             }
         });
     };
+    /**
+     * Converts image data into image.
+     * @param {any} data - data to be converted
+     * @return {Promise} promise of converted image
+     */
     XCupeController.prototype.loadImage = function (data) {
         return new Promise(function (resolve, reject) {
             var arrayBufferView = new Uint8Array(data);
@@ -356,6 +451,8 @@ var XCupeController = (function () {
     };
     /**
      * Shorthand. It reads image file, loads image and draws resized & cropped image.
+     * @param {any} data - data to be converted
+     * @param {Promise} promise of converted image
      */
     XCupeController.prototype.readAndDrawImage = function (file) {
         var _this = this;
@@ -453,7 +550,10 @@ var XCupeController = (function () {
         return workingCanvas.element;
     };
     /**
-     * Set crops limits
+     * Converts align text into pixels.
+     * @param {Dimensions} image - dimensions of original image
+     * @param {Dimensions} canvas - dimensions of target (canvas) iumage
+     * @param {string} cropString - alignment
      */
     XCupeController.prototype.convertCropToPx = function (image, canvas, cropString) {
         var parts = cropString.split(' ');
@@ -490,9 +590,18 @@ var XCupeController = (function () {
         }
         return crop;
     };
+    /**
+     * Getter for crop.
+     * @return {top: number, left: number} crop
+     */
     XCupeController.prototype.getCrop = function () {
         return { top: 0 - this.crop.top, left: 0 - this.crop.left };
     };
+    /**
+     * Sets crop.
+     * @param {number} top - top crop
+     * @param {number} left - left crop
+     */
     XCupeController.prototype.setCrop = function (top, left) {
         if (top < 0) {
             top = 0;
@@ -508,6 +617,9 @@ var XCupeController = (function () {
         }
         this.crop = { left: 0 - left, top: 0 - top };
     };
+    /**
+     * Draws image into canvas.
+     */
     XCupeController.prototype.draw = function () {
         var crop = this.element.settings.crop;
         this.isImageDrawn = true;
@@ -517,6 +629,13 @@ var XCupeController = (function () {
             this.saveToInput();
         }
     };
+    /**
+     * Returns content of x-cupe element.
+     * @param {OutputType} contentType - type of output (check interface for allowed values)
+     * @param {string} mimeType - if contentType returns image, this param can specify image format
+     * @param {number} quality - quality if image format specified in mimeType supports quality
+     * @return {any} image content in format based on contentType
+     */
     XCupeController.prototype.getContent = function (contentType, mimeType, quality) {
         if (contentType === void 0) { contentType = OutputType.DataUrl; }
         if (mimeType === void 0) { mimeType = "image/png"; }
@@ -534,13 +653,16 @@ var XCupeController = (function () {
                 throw new Error('Incorrect contentType.');
         }
     };
+    /**
+     * Saves Base64 represention of image into input.
+     */
     XCupeController.prototype.saveToInput = function () {
         if (this.element.settings.name) {
             this.inputText.val(this.getContent());
         }
     };
     return XCupeController;
-})();
+}());
 var XCupeGallery = (function (_super) {
     __extends(XCupeGallery, _super);
     function XCupeGallery() {
@@ -549,6 +671,9 @@ var XCupeGallery = (function (_super) {
         this.clickListener = null;
         this.dropListener = null;
     }
+    /**
+     * Applied when element is created.
+     */
     XCupeGallery.prototype.createdCallback = function () {
         this.controller = new XCupeGalleryController(this);
         this.clickListener = this.clicked.bind(this);
@@ -568,6 +693,12 @@ var XCupeGallery = (function (_super) {
             name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : ''
         };
     };
+    /**
+     * Applied when attribute changes.
+     * @param {string} attribute - name of changed attribute
+     * @param {string} oldVal - old value
+     * @param {string} - new value
+     */
     XCupeGallery.prototype.attributeChangedCallback = function (attribute, oldVal, newVal) {
         var applyOnChildren = true; // when true attribute change will be applied to children - <x-cupe> elements
         switch (attribute) {
@@ -606,6 +737,10 @@ var XCupeGallery = (function (_super) {
             this.controller.updateChildAttribute(attribute, oldVal, newVal);
         }
     };
+    /**
+     * Applied as callback of click event.
+     * @param {MouseEvent} event - click event
+     */
     XCupeGallery.prototype.clicked = function (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -613,6 +748,10 @@ var XCupeGallery = (function (_super) {
             this.controller.inputFile.open();
         }
     };
+    /**
+     * Applied as callback of drop event.
+     * @param {Event} event - drop event
+     */
     XCupeGallery.prototype.drop = function (event) {
         event.preventDefault();
         if (this.settings.allowDrop) {
@@ -620,11 +759,18 @@ var XCupeGallery = (function (_super) {
         }
         return false;
     };
+    /**
+     * Returns content of x-cupe element.
+     * @param {OutputType} contentType - type of output (check interface for allowed values)
+     * @param {string} mimeType - if contentType returns image, this param can specify image format
+     * @param {number} quality - quality if image format specified in mimeType supports quality
+     * @return {any} image content in format based on contentType
+     */
     XCupeGallery.prototype.getContent = function () {
         return this.controller.getContent.apply(this.controller, arguments);
     };
     return XCupeGallery;
-})(HTMLElement);
+}(HTMLElement));
 var XCupeGalleryController = (function () {
     function XCupeGalleryController(xcupegallery) {
         this.element = null;
@@ -634,6 +780,9 @@ var XCupeGalleryController = (function () {
         this.setupComponent();
         this.shadow.removeChild(this.shadow.querySelector('canvas'));
     }
+    /**
+     * Custom Element setup.
+     */
     XCupeGalleryController.prototype.setupComponent = function () {
         // Create a shadow root
         this.shadow = this.element['createShadowRoot']();
@@ -642,9 +791,14 @@ var XCupeGalleryController = (function () {
         this.shadow.appendChild(template);
         this.inputFile = new XCupeInputFileElement(this.shadow.querySelector('input[type="file"]'), this, true);
     };
+    /**
+     * It reads image files loads image and creates x-cupe elements.
+     * @param {any} files - data to be converted
+     * @param {Promise} promise of converted image
+     */
     XCupeGalleryController.prototype.readAndDrawImage = function (files) {
-        for (var _i = 0; _i < files.length; _i++) {
-            var file = files[_i];
+        for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+            var file = files_1[_i];
             var element = new window['HTMLXCupeElement']();
             var galleryAttributes = this.element.attributes;
             for (var i = 0; i < galleryAttributes.length; i++) {
@@ -657,11 +811,25 @@ var XCupeGalleryController = (function () {
             this.element.appendChild(element);
         }
     };
+    /**
+     * Updates attibutes to children X-Cupe elements.
+     * @param {string} attribute - name of changed attribute
+     * @param {string} oldVal - old value
+     * @param {string} - new value
+     */
     XCupeGalleryController.prototype.updateChildAttribute = function (attribute, oldVal, newVal) {
         this.getChildrenAsArray().forEach(function (xcupe) {
             xcupe.setAttribute(attribute, newVal);
         });
     };
+    /**
+     * Returns content of x-cupe elements.
+     * @param {string} type - Array or Map
+     * @param {OutputType} contentType - type of output (check interface for allowed values)
+     * @param {string} mimeType - if contentType returns image, this param can specify image format
+     * @param {number} quality - quality if image format specified in mimeType supports quality
+     * @return {any} image content in format based on contentType
+     */
     XCupeGalleryController.prototype.getContent = function (type, contentType, mimeType, quality) {
         if (type === void 0) { type = "Array"; }
         if (mimeType === void 0) { mimeType = "image/png"; }
@@ -682,11 +850,15 @@ var XCupeGalleryController = (function () {
         });
         return (type === 'map') ? contentMap : contentArray;
     };
+    /**
+     * Returns children X-Cupe elements as array.
+     * @return {XCupe[]} X-Cupe elements
+     */
     XCupeGalleryController.prototype.getChildrenAsArray = function () {
         var children = this.element.querySelectorAll('x-cupe');
         return Array.prototype.slice.call(children, 0);
     };
     return XCupeGalleryController;
-})();
+}());
 window['HTMLXCupeElement'] = document['registerElement']('x-cupe', XCupe);
 window['HTMLXCupeGalleryElement'] = document['registerElement']('x-cupe-gallery', XCupeGallery);
