@@ -6,7 +6,7 @@ Cupe is Web Component that allows client-side image manipulation (resizing and c
 ## Example
 
 ```html
-<script src="bower_components/webcomponentsjs/webcomponents.js"></script> <!-- Compatibility -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.23/CustomElements.js"></script> <!-- Compatibility -->
 <link rel="import" href="x-cupe.html">
 
 <x-cupe width="450" height="450"></x-cupe>
