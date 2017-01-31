@@ -1,9 +1,19 @@
 {
+    "files": [
+        "./src/interfaces.ts",
+        "./src/XCupeInputFileElement.ts",
+        "./src/XCupeInputTextElement.ts",
+        "./src/XCupeCanvasElement.ts",
+        "./src/XCupe.ts",
+        "./src/XCupeController.ts",
+        "./src/XCupeGallery.ts",
+        "./src/XCupeGalleryController.ts",
+        "./src/registerElement.ts"
+    ],
     "compilerOptions": {
-        "target": "ES5",
-        "module": "amd",
+        "target": "es5",
         "sourceMap": true,
-        "outDir": "dist",
+        "out": "dist/x-cupe.js",
         "watch": true
     }
 }

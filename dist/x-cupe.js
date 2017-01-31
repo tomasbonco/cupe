@@ -165,14 +165,15 @@ var XCupeCanvasElement = (function () {
 var XCupe = (function (_super) {
     __extends(XCupe, _super);
     function XCupe() {
-        _super.apply(this, arguments);
-        this.controller = null;
-        this.mousedownListener = null;
-        this.mousemoveListener = null;
-        this.mouseupListener = null;
-        this.dropListener = null;
-        this.moveImage = null;
-        this.numberX = 0;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.controller = null;
+        _this.mousedownListener = null;
+        _this.mousemoveListener = null;
+        _this.mouseupListener = null;
+        _this.dropListener = null;
+        _this.moveImage = null;
+        _this.numberX = 0;
+        return _this;
     }
     /**
      * Applied when element is created.
@@ -194,7 +195,7 @@ var XCupe = (function (_super) {
             allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
             allowDrop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
             allowSelect: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
-            name: this.getAttribute('name') || ''
+            name: this.getAttribute('name') || '',
         };
         this.controller.canvas.setDimensions({ width: this.settings.width, height: this.settings.height });
         this.moveImage = {
@@ -205,7 +206,6 @@ var XCupe = (function (_super) {
         };
         this.ondragover = function () { return false; };
         this.addEventListener('drop', this.dropListener);
-        console.log(this.settings.name);
         this.controller.inputText.name(this.settings.name);
     };
     /**
@@ -346,7 +346,7 @@ var XCupe = (function (_super) {
         return this.controller.getContent.apply(this.controller, arguments);
     };
     return XCupe;
-}(HTMLInputElement));
+}(HTMLElement));
 var XCupeController = (function () {
     function XCupeController(xcupe) {
         this.element = null;
@@ -418,7 +418,7 @@ var XCupeController = (function () {
      */
     XCupeController.prototype.readFile = function (file) {
         return new Promise(function (resolve, reject) {
-            if (Array.isArray(file)) {
+            if (Array.isArray(file) || '0' in file) {
                 file = file[0]; // can read only first file
             }
             if (file instanceof Blob) {
@@ -533,7 +533,8 @@ var XCupeController = (function () {
         var offScreenCanvas = new XCupeCanvasElement();
         offScreenCanvas.setDimensions({
             width: dimensions.width > tempNewSize.width ? dimensions.width : tempNewSize.width,
-            height: dimensions.height > tempNewSize.height ? dimensions.height : tempNewSize.height });
+            height: dimensions.height > tempNewSize.height ? dimensions.height : tempNewSize.height
+        });
         // one canvas small, for final image
         var workingCanvas = new XCupeCanvasElement();
         workingCanvas.setDimensions(dimensions);
@@ -666,10 +667,11 @@ var XCupeController = (function () {
 var XCupeGallery = (function (_super) {
     __extends(XCupeGallery, _super);
     function XCupeGallery() {
-        _super.apply(this, arguments);
-        this.controller = null;
-        this.clickListener = null;
-        this.dropListener = null;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.controller = null;
+        _this.clickListener = null;
+        _this.dropListener = null;
+        return _this;
     }
     /**
      * Applied when element is created.
@@ -690,7 +692,7 @@ var XCupeGallery = (function (_super) {
             allowMove: this.getAttribute('allow-move') ? this.getAttribute('allow-move').trim().toLowerCase() === 'true' : true,
             allowDrop: this.getAttribute('allow-drop') ? this.getAttribute('allow-drop').trim().toLowerCase() === 'true' : true,
             allowSelect: this.getAttribute('allow-select') ? this.getAttribute('allow-select').trim().toLowerCase() === 'true' : true,
-            name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : ''
+            name: this.getAttribute('name') ? this.getAttribute('name') + '[]' : '',
         };
     };
     /**
@@ -797,6 +799,9 @@ var XCupeGalleryController = (function () {
      * @param {Promise} promise of converted image
      */
     XCupeGalleryController.prototype.readAndDrawImage = function (files) {
+        if (!Array.isArray(files)) {
+            files = [files];
+        }
         for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
             var file = files_1[_i];
             var element = new window['HTMLXCupeElement']();

@@ -92,11 +92,11 @@ class XCupeController
 	 * Reads image.
 	 * @param {Blobl|Blob[]} file - file to be read
 	 */
-	readFile( file: Blob|Blob[] ): void
+	readFile( file: Blob|Blob[] ): Promise<any>
 	{
-		return new Promise(( resolve, reject )=>
+		return new Promise<any>(( resolve, reject )=>
 		{
-			if ( Array.isArray( file ) )
+			if ( Array.isArray( file ) || '0' in file )
 			{
 				file = file[0]; // can read only first file
 			}
@@ -131,7 +131,7 @@ class XCupeController
 	 */
 	loadImage( data )
 	{
-		return new Promise(( resolve, reject )=>
+		return new Promise<any>(( resolve, reject )=>
 		{
 			let arrayBufferView = new Uint8Array( data )
 			let imageBlob = window.URL.createObjectURL( new Blob([ arrayBufferView ], { type: "image/jpeg" } ));

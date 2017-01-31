@@ -1,4 +1,4 @@
-class XCupe extends HTMLInputElement
+class XCupe extends HTMLElement
 {
 	controller: XCupeController = null;
 	mousedownListener: ()=>{} = null;
@@ -50,7 +50,6 @@ class XCupe extends HTMLInputElement
 		this.ondragover = ()=> { return false; }
 		this.addEventListener( 'drop', this.dropListener )
 		
-		console.log( this.settings.name )
 		this.controller.inputText.name( this.settings.name )
 	}
 	

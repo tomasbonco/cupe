@@ -34,8 +34,13 @@ class XCupeGalleryController
 	 * @param {any} files - data to be converted
 	 * @param {Promise} promise of converted image
 	 */
-	readAndDrawImage( files )
+	readAndDrawImage( files: Blob|Blob[] )
 	{
+		if ( ! Array.isArray( files ))
+		{
+			files = [ files ];
+		}
+		
 		for ( let file of files )
 		{
 			let element = new window['HTMLXCupeElement']()
@@ -84,7 +89,7 @@ class XCupeGalleryController
 	{
 		type = type.toLowerCase();
 		
-		if ( type !== 'map' || type !== 'array' ) throw new Error( `Incorrect type for CupeGallery.getContent provided (${type}). Allowed values are Map|Array` );
+		if ( type !== 'map' || type as string !== 'array' ) throw new Error( `Incorrect type for CupeGallery.getContent provided (${type}). Allowed values are Map|Array` );
 		
 		let contentMap = new Map<XCupe, any>();
 		let contentArray: XCupe[] = [];
